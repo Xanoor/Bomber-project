@@ -181,6 +181,7 @@ class ObjetGraphique:
     x: float
     y: float
     couleur: str
+    type: str=None # Si le type n'est pas spécifié, il est none (permet d'eviter des erreurs)
 
 
 class Position(NamedTuple):
@@ -344,7 +345,7 @@ class Canevas(tk.Canvas):
         self,
         x: float,
         y: float,
-        size: float,
+        size: float, #Rajout d'un paramètre pour ajuster la taille de l'image
         fichier: str | PathLike[str],
         ancre: Literal["n", "s", "w", "e", "nw", "sw", "ne", "se", "center"] = "nw",
     ) -> ObjetGraphique:
@@ -363,7 +364,7 @@ class Canevas(tk.Canvas):
             photo_image = self.images[fichier]
         else:
             img = Image.open(fichier)
-            img = img.resize(size)
+            img = img.resize(size) # Ajuster la taille de l'image
             photo_image = ImageTk.PhotoImage(img)
             self.images[fichier] = photo_image
 
