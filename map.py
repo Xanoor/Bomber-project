@@ -45,13 +45,16 @@ def initialize_objects(gameMap, g, SIZE, COLORS):
         player: Tuple des coordonnées du bomber
     """
     objects = {}
+    upgrades = []
     player = None
     for y in range(len(gameMap)):
         for x in range(len(gameMap[y])):
-            if gameMap[y][x] in COLORS:
+            if gameMap[y][x] == "U":
+                upgrades.append((SIZE*x, SIZE*y))
+            elif gameMap[y][x] in COLORS:
                 obj = g.afficherImage(SIZE * x, SIZE * y, (SIZE, SIZE), COLORS[gameMap[y][x]])
                 obj.type = gameMap[y][x]
                 objects[(SIZE * x, SIZE * y, obj.id)] = obj
             elif gameMap[y][x] == "P":
                 player = (SIZE*x, SIZE*y)
-    return objects, player
+    return objects, player, upgrades
