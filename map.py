@@ -9,7 +9,7 @@ def load_map(file_path, LARGEUR, HAUTEUR):
     Returns:
         tuple: (gameMap, objects, timer, timerfantome, SIZE)
     """
-    gameMap = []
+    gameMap = [[]]*2 #On créer deux lignes vide pour mettre les stats !
     timer = None
     timerfantome = None
     maxLength = ""
@@ -29,10 +29,21 @@ def load_map(file_path, LARGEUR, HAUTEUR):
                 gameMap.append(list(line))
 
     SIZE = min(LARGEUR // len(maxLength)+1, HAUTEUR // len(gameMap)) #Permet de définir la taille d'une cellule en fonction de la taille de l'écran et des la carte.
-    return gameMap, int(timer), int(timerfantome), SIZE
+
+    map_width = len(maxLength) * SIZE  # Largeur de la carte jouable en pixels
+    map_height = len(gameMap) * SIZE  # Hauteur de la carte jouable en pixels
+
+    margin_x = (LARGEUR - map_width) // 2  # Marge à gauche
+    margin_y = (HAUTEUR - map_height) // 2  # Marge en haut
+
+    # Ajustement des marges pour qu'elles soient alignées à la grille (cela risque de décaller un peu le centrage...)
+    margin_x -= margin_x % SIZE
+    margin_y -= margin_y % SIZE
+
+    return gameMap, int(timer), int(timerfantome), SIZE, margin_x, margin_y
 
 
-def initialize_objects(gameMap, g, SIZE, COLORS):
+def initialize_objects(gameMap, g, SIZE, COLORS, margin_x, margin_y):
     """
     Initialise les objets de la carte.
     Args:
@@ -52,9 +63,9 @@ def initialize_objects(gameMap, g, SIZE, COLORS):
             if gameMap[y][x] == "U":
                 upgrades.append((SIZE*x, SIZE*y))
             elif gameMap[y][x] in COLORS:
-                obj = g.afficherImage(SIZE * x, SIZE * y, (SIZE, SIZE), COLORS[gameMap[y][x]])
+                obj = g.afficherImage(SIZE * x+margin_x, SIZE * y+margin_y, (SIZE, SIZE), COLORS[gameMap[y][x]])
                 obj.type = gameMap[y][x]
-                objects[(SIZE * x, SIZE * y, obj.id)] = obj
+                objects[(SIZE * x+margin_x, SIZE * y+margin_y, obj.id)] = obj
             elif gameMap[y][x] == "P":
-                player = (SIZE*x, SIZE*y)
+                player = (SIZE*x+margin_x, SIZE*y+margin_y)
     return objects, player, upgrades
