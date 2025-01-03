@@ -7,7 +7,12 @@ def load_map(file_path, LARGEUR, HAUTEUR):
         LARGEUR (int): Largeur de la fenêtre.
         HAUTEUR (int): Hauteur de la fenêtre.
     Returns:
-        tuple: (gameMap, objects, timer, timerfantome, SIZE)
+        gameMap (list) : liste contenant les lignes de la carte
+        int(timer) (int) : entier représentant le timer du jeu
+        int(timerFantome) (int) : entier représentant le temps entre chaque apparitions de fantomes
+        SIZE (int) : taille des cases du jeu
+        margin_x (int) : Marge sur le bord gauche de la fenêtre
+        margin_y (int) : Marge sur le bord haut de la fenêtre
     """
     gameMap = [[]]*2 #On créer deux lignes vide pour mettre les stats !
     timer = None
@@ -47,13 +52,16 @@ def initialize_objects(gameMap, g, SIZE, COLORS, margin_x, margin_y):
     """
     Initialise les objets de la carte.
     Args:
-        gameMap (list): La carte du jeu sous forme de liste 2D.
-        g (Tk): Instance de la fenêtre.
-        SIZE (int): Taille des cases.
-        COLORS (dict): Dictionnaire des couleurs associées aux types d'objets.
+        gameMap (list) : La carte du jeu sous forme de liste 2D.
+        g (Tk) : Instance de la fenêtre.
+        SIZE (int) : Taille des cases.
+        COLORS (dict) : Dictionnaire des couleurs associées aux types d'objets.
+        margin_x (int) : Marge x de la fenêtre
+        margin_y (int) : Marge y de la fenêtre
     Returns:
-        dict: Dictionnaire des objets créés.
-        player: Tuple des coordonnées du bomber
+        objects (dict) : Dictionnaire des objets créés.
+        player(tuple) : Tuple des coordonnées du bomber
+        upgrades (list) : Liste contenant des tuples des coordonées des upgrades
     """
     objects = {}
     upgrades = []

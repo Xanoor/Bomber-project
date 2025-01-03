@@ -58,12 +58,12 @@ class Game:
 
     def getCase(self, x, y):
         """
-        Permet de récupérer la case sur laquelle nous avons cliqué, on met la priorité sur les fantomes (plus important qu'une prise ethernet par exemple)
+        Permet de récupérer la case que nous vérifions, on met la priorité sur les fantomes (plus important qu'une prise ethernet par exemple)
         Args:
-            x (int) : position x du clic
-            y (int) : position y du clic
+            x (int) : position x à vérifier
+            y (int) : position y à vérifier
         Return:
-            objet (tuple) : Objet a retourné / objet null
+            objectInCase (list) : Objet à retourner / objet null
         """
         if type(x) != int or type(y) != int:
             return [NullObject(x-(x%self.SIZE), y-(y%self.SIZE), None)]
@@ -83,9 +83,9 @@ class Game:
         Args:
             x (int) : position x de l'objet
             y (int) : position y de l'objet
-            dirx (int) : direction x a vérifier
-            diry (int) : direction y a vérifier
-            s (int) : nombre de direction vérifiées
+            dirx (int) : direction x a vérifier, par défaut sur 1
+            diry (int) : direction y a vérifier, par défaut sur 0
+            s (int) : nombre de direction vérifiées, par défaut sur 0
         Return:
             positions (list) : retourne quatres positions (les quatres positions voisines)
         """
@@ -160,7 +160,7 @@ class Game:
         )
 
     def run(self):
-        """Fonction "loop" du jeu"""
+        """Fonction permettant de tourner le jeu"""
 
         keys_dirs = {
             "z": (0, -1), "s": (0, 1), "q": (-1, 0), "d": (1, 0),

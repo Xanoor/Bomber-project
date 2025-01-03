@@ -16,7 +16,7 @@ class Player:
         self.y = None
         self.id = None
         self.level = 0
-        self.explosionDist = 10
+        self.explosionDist = 1
         self.points = 0
         self.object = self.createPlayer(x, y)
 
@@ -27,7 +27,7 @@ class Player:
             x (int) : position x du joueur
             y (int) : position y du joueur
         Return:
-            None
+            player_obj (ObjetGraphique) : affichage sur la carte du joueur
         """
         player_obj = self.game.g.afficherImage(x, y, (self.game.SIZE, self.game.SIZE), "textures/player.png")
         self.x = player_obj.x
@@ -47,6 +47,9 @@ class Player:
     def move(self, x, y):
         """
         Fonction appelée afin de faire bouger le joueur.
+        Args:
+            x (int) : coordonnées x de la nouvelle position du joueur
+            y (int) : coordonnées y de la nouvelle position du joueur
         """
         self.game.g.deplacer(self.object, x, y)
         self.x = self.object.x
@@ -162,6 +165,15 @@ class Bombe:
     def getExplosionPattern(self, x, y, dirx=1, diry=0, dist=1, s=0):
         """
         Fonction récursive permettant d'obtenir le patterne de l'explosion (position)
+        Args:
+            x (int) : position x de la bombe
+            y (int) : position y de la bombe
+            dirx (int) : direction x de l'explosion (haut, bas, gauche, droite), par défaut sur 1
+            diry (int) : direction y de l'explosion, par défaut sur 0
+            dist (int) : distance de l'explosion par rapport à la bombe, par défaut sur 1
+            s (int) : nombre de direction testé par la bombe, par défaut sur 0
+        Return:
+            pattern (list) : liste contenant tout les coordonées (x, y) des cases touchés par l'explosion
         """
         pattern = []
         if s == 4:
