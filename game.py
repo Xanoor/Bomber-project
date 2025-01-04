@@ -11,7 +11,6 @@ class Game:
     def __init__(self):
         self.g = None
         self.gameover = False
-        self.win = False
         self.objects = {}
         self.stats_obj = None
         self.explosions = []
@@ -128,13 +127,9 @@ class Game:
     def update(self):
         """Fonction appelée a chaque tours afin de mettre a jour les variables et appeler les autres classes"""
 
-        for obj in self.objects.copy(): # La consigne oblige de faire déja déplacer les fantomes, puis faire mettre a jour les bombes
-            try:                        # il y aura donc deux boucles pour la fonction udpate, une pour fantomes et upgrades et une pour bombes
-                if (hasattr(self.objects[obj], "update") and 
-                    (self.objects[obj].type == "F" or self.objects[obj].type == "U")):
-                    self.objects[obj].update()
-            except: #Erreur lors de la récupération de l'objet (supprimé par exemple)
-                continue
+        # Mise à jour des fantomes et des updates
+
+        self.update_FU_or_B(["F", "U"]) 
 
         # Faire apparaitre les nouveaux fantomes si le timerfantome == 0
         if self.timerfantome == 0:
@@ -143,13 +138,7 @@ class Game:
                 if v.type == "E":
                     Fantome(v.x-(v.x%self.SIZE), v.y-(v.y%self.SIZE), self)
 
-        # Mise a jour des bombes
-        for obj in self.objects.copy(): # La consigne oblige de faire déja déplacer les fantomes, puis faire mettre a jour les bombes
-            try:                        # il y aura donc deux boucles pour la fonction udpate, une pour fantomes et upgrades et une pour bombes
-                if hasattr(self.objects[obj], "update") and self.objects[obj].type == "B":
-                    self.objects[obj].update()
-            except: #Erreur lors de la récupération de l'objet (supprimé par exemple)
-                continue
+        self.update_FU_or_B(["B"])
 
         # Mise a jour des timers
         self.timer -= 1
@@ -158,29 +147,36 @@ class Game:
         if self.timer <= 0:
             self.gameover = True
             
-            
-
         # Mise a jour des statistique (UI)
         statistiques(
             self.g, self.stats_obj, self.timer, 
             self.player.pv, self.player.points, self.player.level, 
             self.SIZE, self.SIZE + self.SIZE//2
         )
-
-        #On vérifie s'il reste des murs, si non : le jeu est gagné, on l'arrête.
-        compteur_M = 0
-        for obj in self.objects.values():
-            if obj.type == 'M':
-                compteur_M += 1
-
-        if compteur_M == 0: #Si tous les murs sont cassés, le joueur gagne
-            self.win = True
-
-        if self.gameover or self.win: #Si le joueur à gagné ou perdu, on affiche du texte.
+        
+        if self.gameover: #Si le joueur à gagné ou perdu, on affiche du texte.
             self.displayUI()
 
+    def update_FU_or_B(self, type_obj):
+        """
+        Fonctions mettant à jour soit les fantomes et les updates soit les bombes
+
+        Args:
+            type_obj (list) : liste contenant le (ou les) type(s) que l'on souhaite update
+        """
+        for obj in self.objects.copy(): # La consigne oblige de faire déja déplacer les fantomes, puis faire mettre a jour les bombes
+            try:                        # il y aura donc deux appels de cette fonction pour la fonction update, une pour fantomes et upgrades et une pour bombes
+                for type in type_obj:
+                    if (hasattr(self.objects[obj], "update") and self.objects[obj].type == type):
+                        self.objects[obj].update()
+            except: #Erreur lors de la récupération de l'objet (supprimé par exemple)
+                continue
+
     def displayUI(self):
-        player_choice = show_game_result(self.g, self.gameover)
+        """
+        Fonction permettant d'afficher du texte et de recommencer le jeu OU de l'arrêter.
+        """
+        player_choice = show_game_result(self.g, self.player.points)
 
         if player_choice == "play_again": #Si le joueur veut rejouer, on relance
             Game()
@@ -194,11 +190,11 @@ class Game:
             "z": (0, -1), "s": (0, 1), "q": (-1, 0), "d": (1, 0),
             "up": (0, -1), "down": (0, 1), "left": (-1, 0), "right": (1, 0)
         }
-        binded_keys = {"e", "z", "s", "q", "d", "up", "right", "down", "left", "space"}
+        binded_keys = {"e", "z", "s", "q", "d", "up", "right", "down", "left"}
         key = None
         while key != config.keys["quit"]:
             key = self.g.attendreTouche().lower() # On transforme la touche en minuscule au cas ou le joueur a activé CAPSLOCK
-            if key in binded_keys and not self.gameover and not self.win:
+            if key in binded_keys and not self.gameover:
                 if len(self.explosions) > 0:
                     for explosion in self.explosions:
                         self.g.supprimer(explosion)
@@ -223,7 +219,7 @@ class Game:
                         continue
 
                     self.player.move(self.SIZE * keys_dirs[key][0], self.SIZE * keys_dirs[key][1])
-                elif (key == config.keys["poser_bombe"]) and not self.gameover and not self.win:
+                elif (key == config.keys["poser_bombe"]) and not self.gameover:
                     Bombe(self.player.x, self.player.y, self)
 
                 self.update()
