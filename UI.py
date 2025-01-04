@@ -22,21 +22,34 @@ def statistiques(g, stats_obj, timer: int, pv: int, points: int, level: int, SIZ
         stats_obj = g.afficherTexte(stats, largeur_stats, hauteur_stats, 'white', SIZE)
     return stats_obj
 
-def show_game_result(g: object, gameover: bool) -> str:
-        if gameover:
-            final_message = "GAME OVER"
-        else:
-            final_message = "YOU WIN"
+def show_game_result(g: object, points: int) -> str:
+        """
+        Fonction de fin de jeu affichant le score final.
+
+        Args :
+            g (object) : Notre fenêtre.
+            points (int) : Points du joueur à la fin de la partie.
+        Return :
+            choice[key] (str) : choix de fin de jeu retourné par la fonction endGameOptions.
+        """
+        final_message = "GAME OVER"
         size_text = 40
-        longueur_rect, largeur_rect = size_text * len(final_message), size_text
-        x_rect = LARGEUR/2 - (longueur_rect/2)
-        y_rect = HAUTEUR/2 - (largeur_rect / 2)
+        longueur_rect, largeur_rect = size_text * len(final_message), size_text * 3
+        x_rect, y_rect = LARGEUR/2 - (longueur_rect/2), HAUTEUR/2 - (largeur_rect / 2)
         g.dessinerRectangle(x_rect, y_rect, longueur_rect, largeur_rect, "gray")
-        g.afficherTexte(final_message, LARGEUR/2, HAUTEUR/2, "white", size_text)
+        g.afficherTexte(final_message + "\n    Score : " + str(points), LARGEUR/2, HAUTEUR/2, "white", size_text)
         return endGameOptions(g)
 
 
 def endGameOptions(g: object) -> str:
+    """
+    Fonction permettant de recommencer ou d'arrêter la partie.
+
+    Args :
+        g (object) : Notre fenêtre.
+    Return :
+        choice[key] (str) : choix de fin de jeu retourné par la fonction endGameOptions.
+    """
     g.afficherTexte("RECOMMENCER ? (Espace)", LARGEUR/4, HAUTEUR/1.5, "white", 20)
     g.afficherTexte("ARRÊTER ? (Echap)", LARGEUR/1.25, HAUTEUR/1.5, "white", 20)
     key = None
