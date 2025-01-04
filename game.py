@@ -1,7 +1,7 @@
 from tkiteasy import ouvrirFenetre
 from map import load_map, initialize_objects
 from game_objects import Player, Fantome, Bombe, Upgrade, NullObject
-from UI import statistiques
+from UI import statistiques, show_game_result
 import config
 
 LARGEUR = config.LARGEUR
@@ -169,56 +169,35 @@ class Game:
 
         #On vérifie s'il reste des murs, si non : le jeu est gagné, on l'arrête.
         compteur_M = 0
-        for i in range(len(list(self.objects.values()))):
-            if list(self.objects.values())[i].type == 'M':
+        for obj in self.objects.values():
+            if obj.type == 'M':
                 compteur_M += 1
-        if compteur_M == 0:
+
+        if compteur_M == 0: #Si tous les murs sont cassés, le joueur gagne
             self.win = True
 
-        if self.gameover:
-            self.win_or_lose()
-        if self.win:
-            self.win_or_lose()
+        if self.gameover or self.win: #Si le joueur à gagné ou perdu, on affiche du texte.
+            self.displayUI()
 
-    def win_or_lose(self):
-        if self.gameover:
-            final_message = "GAME OVER"
-        else:
-            final_message = "YOU WIN"
-        size_text = 40
-        longueur_rect, largeur_rect = size_text * len(final_message), size_text
-        x_rect = LARGEUR/2 - (longueur_rect/2)
-        y_rect = HAUTEUR/2 - (largeur_rect / 2)
-        rect_gameover = self.g.dessinerRectangle(x_rect, y_rect, longueur_rect, largeur_rect, "gray")
-        text_gameover = self.g.afficherTexte(final_message, LARGEUR/2, HAUTEUR/2, "white", size_text)
-        self.end()
-        
+    def displayUI(self):
+        player_choice = show_game_result(self.g, self.gameover)
 
-    def end(self):
-        self.g.afficherTexte("RECOMMENCER ? (Espace)", LARGEUR/4, HAUTEUR/1.5, "white", 20)
-        self.g.afficherTexte("ARRÊTER ? (Echap)", LARGEUR/1.25, HAUTEUR/1.5, "white", 20)
-        touche_fin = None
-        while touche_fin not in {"space", "Espace"}: # On oblige que la touche soit espace ou échap.
-            touche_fin = self.g.attendreTouche()
-            if touche_fin == "space":
-                self.g.fermerFenetre()
-                Game()
-            elif touche_fin == "Escape":
-                self.g.fermerFenetre()
-                exit()
-    
+        if player_choice == "play_again": #Si le joueur veut rejouer, on relance
+            Game()
+        else:                             #Sinon, on quitte
+            exit()
 
     def run(self):
         """Fonction permettant de tourner le jeu"""
 
         keys_dirs = {
             "z": (0, -1), "s": (0, 1), "q": (-1, 0), "d": (1, 0),
-            "Up": (0, -1), "Down": (0, 1), "Left": (-1, 0), "Right": (1, 0)
+            "up": (0, -1), "down": (0, 1), "left": (-1, 0), "right": (1, 0)
         }
-        binded_keys = {"e", "z", "s", "q", "d", "Up", "Right", "Down", "Left", "space"}
-
-        while True:
-            key = self.g.attendreTouche()
+        binded_keys = {"e", "z", "s", "q", "d", "up", "right", "down", "left", "space"}
+        key = None
+        while key != config.keys["quit"]:
+            key = self.g.attendreTouche().lower() # On transforme la touche en minuscule au cas ou le joueur a activé CAPSLOCK
             if key in binded_keys and not self.gameover and not self.win:
                 if len(self.explosions) > 0:
                     for explosion in self.explosions:
@@ -244,7 +223,9 @@ class Game:
                         continue
 
                     self.player.move(self.SIZE * keys_dirs[key][0], self.SIZE * keys_dirs[key][1])
-                elif (key == "space") and not self.gameover and not self.win:
+                elif (key == config.keys["poser_bombe"]) and not self.gameover and not self.win:
                     Bombe(self.player.x, self.player.y, self)
 
                 self.update()
+        self.g.fermerFenetre()
+        

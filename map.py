@@ -25,7 +25,6 @@ def load_map(file_path: str, LARGEUR: int, HAUTEUR: int):
 
     with open(file_path, 'r') as f:
         for line in f.readlines():
-            maxLength = line if len(maxLength) < len(line) else maxLength
             line = line.strip()
             if len(line) < 2:
                 continue
@@ -35,9 +34,11 @@ def load_map(file_path: str, LARGEUR: int, HAUTEUR: int):
             elif line.startswith('timer'):
                 timer = int(line.split(' ')[-1])
             else:
+                maxLength = line if len(maxLength) < len(line) else maxLength
                 gameMap.append(list(line))
 
     SIZE = min(LARGEUR // len(maxLength)+1, HAUTEUR // len(gameMap)) #Permet de définir la taille d'une cellule en fonction de la taille de l'écran et des la carte.
+    if SIZE > 75: SIZE=50 # On évite que chaque cases soit énorme (ultra zommé)
 
     map_width = len(maxLength) * SIZE  # Largeur de la carte jouable en pixels
     map_height = len(gameMap) * SIZE  # Hauteur de la carte jouable en pixels
@@ -48,8 +49,8 @@ def load_map(file_path: str, LARGEUR: int, HAUTEUR: int):
     # Ajustement des marges pour qu'elles soient alignées à la grille (cela risque de décaller un peu le centrage...)
     margin_x -= margin_x % SIZE
     margin_y -= margin_y % SIZE
-
-    return gameMap, int(timer), int(timerfantome), SIZE, margin_x, margin_y
+    
+    return gameMap, int(timer), int(timerfantome), SIZE, abs(margin_x), abs(margin_y)
 
 
 def initialize_objects(gameMap: list, g: object, SIZE: int, IMAGES: dict, margin_x: int, margin_y: int):
