@@ -1,5 +1,5 @@
 
-def load_map(file_path, LARGEUR, HAUTEUR):
+def load_map(file_path: str, LARGEUR: int, HAUTEUR: int):
     """
     Charge la carte ainsi que les variables timer et timerfantome depuis un fichier.
     Args:
@@ -14,6 +14,10 @@ def load_map(file_path, LARGEUR, HAUTEUR):
         margin_x (int) : Marge sur le bord gauche de la fenêtre
         margin_y (int) : Marge sur le bord haut de la fenêtre
     """
+    if type(file_path) != str or type(LARGEUR) != int or type(HAUTEUR) != int:
+        print("Erreur, ce ne sont pas les bons paramètres !")
+        exit()
+
     gameMap = [[]]*2 #On créer deux lignes vide pour mettre les stats !
     timer = None
     timerfantome = None
@@ -48,14 +52,14 @@ def load_map(file_path, LARGEUR, HAUTEUR):
     return gameMap, int(timer), int(timerfantome), SIZE, margin_x, margin_y
 
 
-def initialize_objects(gameMap, g, SIZE, COLORS, margin_x, margin_y):
+def initialize_objects(gameMap: list, g: object, SIZE: int, IMAGES: dict, margin_x: int, margin_y: int):
     """
     Initialise les objets de la carte.
     Args:
         gameMap (list) : La carte du jeu sous forme de liste 2D.
         g (Tk) : Instance de la fenêtre.
         SIZE (int) : Taille des cases.
-        COLORS (dict) : Dictionnaire des couleurs associées aux types d'objets.
+        IMAGES (dict) : Dictionnaire des couleurs associées aux types d'objets.
         margin_x (int) : Marge x de la fenêtre
         margin_y (int) : Marge y de la fenêtre
     Returns:
@@ -70,8 +74,8 @@ def initialize_objects(gameMap, g, SIZE, COLORS, margin_x, margin_y):
         for x in range(len(gameMap[y])):
             if gameMap[y][x] == "U":
                 upgrades.append((SIZE*x, SIZE*y))
-            elif gameMap[y][x] in COLORS:
-                obj = g.afficherImage(SIZE * x+margin_x, SIZE * y+margin_y, (SIZE, SIZE), COLORS[gameMap[y][x]])
+            elif gameMap[y][x] in IMAGES:
+                obj = g.afficherImage(SIZE * x+margin_x, SIZE * y+margin_y, (SIZE, SIZE), IMAGES[gameMap[y][x]])
                 obj.type = gameMap[y][x]
                 objects[(SIZE * x+margin_x, SIZE * y+margin_y, obj.id)] = obj
             elif gameMap[y][x] == "P":

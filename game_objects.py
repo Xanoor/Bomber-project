@@ -2,14 +2,14 @@ import random
 
 # Classe créer pour toutes cases vides (ou objet non répertorié)
 class NullObject:
-    def __init__(self, x, y, type):
+    def __init__(self, x: int, y: int, type: str):
         self.x = x
         self.y = y
         self.type = type
 
 # Classe du joueur
 class Player:
-    def __init__(self, x, y, game):
+    def __init__(self, x: int, y: int, game: object):
         self.game = game
         self.pv = 20
         self.x = None
@@ -20,7 +20,7 @@ class Player:
         self.points = 0
         self.object = self.createPlayer(x, y)
 
-    def createPlayer(self, x, y):
+    def createPlayer(self, x: int, y: int):
         """
         Permet de créer le joueur.
         Args:
@@ -40,11 +40,11 @@ class Player:
         Fonction appelée lorsque le joueur est touché par une bombe ou attaqué par un fantome.
         """
 
-        self.pv -= 1
+        if self.pv > 0: self.pv -= 1 #évite d'avoir des PV négatifs
         if self.pv <= 0:
             self.game.gameover = True
 
-    def move(self, x, y):
+    def move(self, x: int, y: int):
         """
         Fonction appelée afin de faire bouger le joueur.
         Args:
@@ -58,7 +58,7 @@ class Player:
 
 # Classe des fantomes
 class Fantome:
-    def __init__(self, x, y, game):
+    def __init__(self, x: int, y: int, game: object):
         self.game = game
         self.id = None
         self.x = None
@@ -66,7 +66,7 @@ class Fantome:
         self.lastPos = None
         self.createFantom(x, y)
         
-    def createFantom(self, x, y):
+    def createFantom(self, x: int, y: int):
         """
         Fonction permettant de créer un fantome, le fantome apparait a coté d'une prise éthernet.
         Args:
@@ -85,7 +85,7 @@ class Fantome:
             self.id = self.obj.id
             self.game.objects[(self.x, self.y, self.id)] = self
 
-    def isPlayerNeighbor(self, neightbor):
+    def isPlayerNeighbor(self, neightbor: list):
         """
         Fonction qui vérifie si le joueur est voisin ou non.
         Args:
@@ -140,16 +140,16 @@ class Fantome:
         self.game.objects[(self.x, self.y, self.id)] = self
 
 class Bombe:
-    def __init__(self, x, y, game):
+    def __init__(self, x: int, y: int, game: object):
         self.game = game
         self.id = None
         self.x = x
         self.y = y
         self.type = "B"
-        self.cooldown = 6 # 5-1 car on met direct a jour le tour (ce qui retire un au cooldown)
+        self.cooldown: int = 6 # 5-1 car on met direct a jour le tour (ce qui retire un au cooldown)
         self.createBomb(x, y)
 
-    def createBomb(self, x, y):
+    def createBomb(self, x: int, y: int):
         """
         Fonction permettant de créer une bombe. Elle créer l'objets graphique, les données et enregistre tout dans le dictionnaire objects.
         Params:
@@ -162,7 +162,7 @@ class Bombe:
         self.id = self.obj.id
         self.game.objects[(self.x, self.y, self.id)] = self
 
-    def getExplosionPattern(self, x, y, dirx=1, diry=0, dist=1, s=0):
+    def getExplosionPattern(self, x: int, y: int, dirx: int=1, diry: int=0, dist: int=1, s: int=0) -> list:
         """
         Fonction récursive permettant d'obtenir le patterne de l'explosion (position)
         Args:
@@ -237,7 +237,7 @@ class Bombe:
 
 # Classe pour les améliorations (upgrades)
 class Upgrade:
-    def __init__(self, x, y, game):
+    def __init__(self, x: int, y: int, game: object):
         self.game = game
         self.id = None
         self.x = x
@@ -245,7 +245,7 @@ class Upgrade:
         self.type = "U"
         self.createUpgrade(x, y)
 
-    def createUpgrade(self, x, y):
+    def createUpgrade(self, x: int, y: int):
         """
         Fonction permettant de créer une upgrade. Elle créer l'objets graphique, les données et enregistre tout dans le dictionnaire objects.
         Params:
