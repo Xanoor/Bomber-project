@@ -11,7 +11,7 @@ class NullObject:
 class Player:
     def __init__(self, x: int, y: int, game: object):
         self.game = game
-        self.pv = 20
+        self.pv = 3
         self.x = None
         self.y = None
         self.id = None
