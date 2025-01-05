@@ -53,7 +53,7 @@ def endGameOptions(g: object) -> str:
     g.afficherTexte("RECOMMENCER ? (Espace)", LARGEUR/4, HAUTEUR/1.5, "white", 20)
     g.afficherTexte("ARRÊTER ? (Echap)", LARGEUR/1.25, HAUTEUR/1.5, "white", 20)
     key = None
-    choice = {keys["play_again"]: "play_again", keys["quit"]: "quit"}
+    choice = {keys["play again"]: "play again", keys["quit"]: "quit"}
     while True:
         key = g.attendreTouche().lower()
         if key in choice: 

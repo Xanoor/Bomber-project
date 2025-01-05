@@ -75,10 +75,11 @@ def initialize_objects(gameMap: list, g: object, SIZE: int, IMAGES: dict, margin
         for x in range(len(gameMap[y])):
             if gameMap[y][x] == "U":
                 upgrades.append((SIZE*x, SIZE*y))
+            elif gameMap[y][x] == "P":
+                player = (SIZE*x+margin_x, SIZE*y+margin_y)
             elif gameMap[y][x] in IMAGES:
                 obj = g.afficherImage(SIZE * x+margin_x, SIZE * y+margin_y, (SIZE, SIZE), IMAGES[gameMap[y][x]])
                 obj.type = gameMap[y][x]
                 objects[(SIZE * x+margin_x, SIZE * y+margin_y, obj.id)] = obj
-            elif gameMap[y][x] == "P":
-                player = (SIZE*x+margin_x, SIZE*y+margin_y)
+
     return objects, player, upgrades

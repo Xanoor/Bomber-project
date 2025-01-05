@@ -3,6 +3,7 @@ from map import load_map, initialize_objects
 from game_objects import Player, Fantome, Bombe, Upgrade, NullObject
 from UI import statistiques, show_game_result
 import config
+import os #module built-in, pas besoins de l'installer
 
 LARGEUR = config.LARGEUR
 HAUTEUR = config.HAUTEUR
@@ -17,14 +18,6 @@ class Game:
         self.cases = {"bloquantes": {"M", "C", "E", "P", "F"}, "non-bloquantes": {"U", "B"}}
         self.timer = None
         self.timerfantome = None
-        self.IMAGES = {
-            "C": "textures/colonne.png",
-            "M": "textures/mur0.png",
-            "E": "textures/ethernet.png",
-            "F": "textures/fantome.png",
-            "B": "textures/bombe.png",
-            "U": "textures/upgrade.png"
-        }
         self.player = None
         self.SIZE = None
         self.margin_x = None
@@ -32,7 +25,8 @@ class Game:
         self.initialize_game()
         self.run()
 
-    def initialize_game(self):
+    def initialize_game(self) -> None:
+        self.verifyTextures()
         try:
             self.g = ouvrirFenetre(LARGEUR, HAUTEUR)
             gameMap, self.timer, self.timerfantome, self.SIZE, self.margin_x, self.margin_y = load_map("map0.txt", LARGEUR, HAUTEUR)
@@ -40,7 +34,7 @@ class Game:
             
             # Récupération des objets, la position du joueur et des upgrades
             self.objects, player_pos, upgrades = initialize_objects(
-                gameMap, self.g, self.SIZE, self.IMAGES, 
+                gameMap, self.g, self.SIZE, config.Textures, 
                 self.margin_x, self.margin_y
             )
             
@@ -48,8 +42,8 @@ class Game:
             self.player = Player(player_pos[0], player_pos[1], self)
             
             # Creation des upgrades
-            for u in upgrades:
-                Upgrade(u[0], u[1], self)
+            for upgrade in upgrades:
+                Upgrade(upgrade[0], upgrade[1], self)
                 
             self.stats_obj = statistiques(
                 self.g, self.stats_obj, self.timer, 
@@ -126,10 +120,14 @@ class Game:
 
     def update(self):
         """Fonction appelée a chaque tours afin de mettre a jour les variables et appeler les autres classes"""
+        #On supprime chaque image d'explosion sur la carte.
+        if len(self.explosions) > 0:
+            for explosion in self.explosions:
+                self.g.supprimer(explosion)
 
         # Mise à jour des fantomes et des updates
-
-        self.update_FU_or_B(["F", "U"]) 
+        self.callUpdate({"F", "U"}) # La consigne oblige de faire déja déplacer les fantomes, puis faire mettre a jour les bombes
+                                    # il y aura donc deux appels de cette fonction pour la fonction callUpdate, une pour fantomes et upgrades et une pour bombes
 
         # Faire apparaitre les nouveaux fantomes si le timerfantome == 0
         if self.timerfantome == 0:
@@ -138,7 +136,8 @@ class Game:
                 if v.type == "E":
                     Fantome(v.x-(v.x%self.SIZE), v.y-(v.y%self.SIZE), self)
 
-        self.update_FU_or_B(["B"])
+        self.callUpdate({"B"}) # La consigne oblige de faire déja déplacer les fantomes, puis faire mettre a jour les bombes
+                               # il y aura donc deux appels de cette fonction pour la fonction callUpdate, une pour fantomes et upgrades et une pour bombes
 
         # Mise a jour des timers
         self.timer -= 1
@@ -157,48 +156,78 @@ class Game:
         if self.gameover: #Si le joueur à gagné ou perdu, on affiche du texte.
             self.displayUI()
 
-    def update_FU_or_B(self, type_obj):
+    def callUpdate(self, type_obj: set) -> None:
         """
         Fonctions mettant à jour soit les fantomes et les updates soit les bombes
 
         Args:
-            type_obj (list) : liste contenant le (ou les) type(s) que l'on souhaite update
+            type_obj (set) : Set contenant le (ou les) type(s) d'objet que l'on souhaite update
         """
-        for obj in self.objects.copy(): # La consigne oblige de faire déja déplacer les fantomes, puis faire mettre a jour les bombes
-            try:                        # il y aura donc deux appels de cette fonction pour la fonction update, une pour fantomes et upgrades et une pour bombes
-                for type in type_obj:
-                    if (hasattr(self.objects[obj], "update") and self.objects[obj].type == type):
-                        self.objects[obj].update()
+
+        for obj in self.objects.copy(): 
+            try:
+                if (hasattr(self.objects[obj], "update") and self.objects[obj].type in type_obj):
+                    self.objects[obj].update()
             except: #Erreur lors de la récupération de l'objet (supprimé par exemple)
                 continue
 
-    def displayUI(self):
+    def displayUI(self) -> None:
         """
         Fonction permettant d'afficher du texte et de recommencer le jeu OU de l'arrêter.
         """
         player_choice = show_game_result(self.g, self.player.points)
 
-        if player_choice == "play_again": #Si le joueur veut rejouer, on relance
+        if player_choice == "play again": #Si le joueur veut rejouer, on relance
             Game()
         else:                             #Sinon, on quitte
             exit()
 
-    def run(self):
-        """Fonction permettant de tourner le jeu"""
+    def verifyKeyBinding(self) -> None:
+        """
+        Fonction permettant de vérifier si toutes les touches du jeu sont attribués et existent.
+        Si ce n'est pas le cas, les touches sont remises par défaut.
+        """
+        keysToCheck = {"up", "down", "left", "right", "play again", "quit", "place_bomb"}
+        if not all(key in config.keys for key in keysToCheck):
+            config.keys = {
+                "up": "z",
+                "down": "s",
+                "right": "d",
+                "left": "q",
+                "place_bomb": "e",
+                "quit": "escape",
+                "play again": "space"
+            }
+        
+    """verifier si les textures dans config.Textures existent bien"""
+    def verifyTextures(self) -> None:
+        """
+        Fonction permettant de vérifier si toutes les textures dans config.Textures existent.
+        Si ce n'est pas le cas, une erreur est créer.
+        """
+        texturesToCheck = {"P", "U", "F", "B", "M", "E", "C"}
+        missing_textures = []
+        for texture in texturesToCheck:
+            if texture not in config.Textures or not os.path.isfile(config.Textures[texture]):
+                missing_textures.append(texture)
 
+        if missing_textures:
+            raise FileNotFoundError(f"Les textures suivantes sont manquantes ou n'existent pas : {', '.join(missing_textures)}")
+
+
+    def run(self) -> None:
+        """Fonction permettant de tourner le jeu"""
+        self.verifyKeyBinding()
+        
         keys_dirs = {
-            "z": (0, -1), "s": (0, 1), "q": (-1, 0), "d": (1, 0),
-            "up": (0, -1), "down": (0, 1), "left": (-1, 0), "right": (1, 0)
+            config.keys["up"]: (0, -1), config.keys["down"]: (0, 1), config.keys["left"]: (-1, 0), config.keys["right"]: (1, 0),
+            "up": (0, -1), "down": (0, 1), "left": (-1, 0), "right": (1, 0) #Touches additionnels (directionnelles)
         }
-        binded_keys = {"e", "z", "s", "q", "d", "up", "right", "down", "left"}
+        binded_keys = set(config.keys.values()) | keys_dirs.keys() #On joint les touches dans config et celles dans keys_dirs (left, right, up, down)
         key = None
         while key != config.keys["quit"]:
             key = self.g.attendreTouche().lower() # On transforme la touche en minuscule au cas ou le joueur a activé CAPSLOCK
             if key in binded_keys and not self.gameover:
-                if len(self.explosions) > 0:
-                    for explosion in self.explosions:
-                        self.g.supprimer(explosion)
-
                 if key in keys_dirs and self.player.object:
                     pos = (
                         self.player.x + self.SIZE * keys_dirs[key][0],
@@ -206,9 +235,9 @@ class Game:
                     )
                     case = self.getCase(pos[0], pos[1])
 
-                    if len(self.checkNeightbor(self.player.x, self.player.y)) < 1: #Le joueur est bloqué ! -> Game Over (on continue ou non ?)
+                    if len(self.checkNeightbor(self.player.x, self.player.y)) < 1: #Le joueur est bloqué -> Game Over
                         self.gameover = True
-                        self.win_or_lose()
+                        self.displayUI()
 
                     for obj in case:
                         if obj.type in self.cases["bloquantes"]:
@@ -219,9 +248,17 @@ class Game:
                         continue
 
                     self.player.move(self.SIZE * keys_dirs[key][0], self.SIZE * keys_dirs[key][1])
-                elif (key == config.keys["poser_bombe"]) and not self.gameover:
-                    Bombe(self.player.x, self.player.y, self)
+                    self.update()
+                elif key == config.keys["place_bomb"] and not self.gameover:
+                    # On verifie si la case est déja un bombe ou non.
+                    caseAlreadyABomb = False
+                    for obj in self.getCase(self.player.x, self.player.y):
+                        if obj.type == "B":
+                            caseAlreadyABomb = True
+                            break
+                    if not caseAlreadyABomb:
+                        Bombe(self.player.x, self.player.y, self) 
+                        self.update()
 
-                self.update()
         self.g.fermerFenetre()
         
