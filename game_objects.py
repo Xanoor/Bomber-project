@@ -1,4 +1,5 @@
 import random
+from config import Textures
 
 # Classe créer pour toutes cases vides (ou objet non répertorié)
 class NullObject:
@@ -11,7 +12,7 @@ class NullObject:
 class Player:
     def __init__(self, x: int, y: int, game: object):
         self.game = game
-        self.pv = 20
+        self.pv = 3
         self.x = None
         self.y = None
         self.id = None
@@ -29,7 +30,7 @@ class Player:
         Return:
             player_obj (ObjetGraphique) : affichage sur la carte du joueur
         """
-        player_obj = self.game.g.afficherImage(x, y, (self.game.SIZE, self.game.SIZE), "textures/player.png")
+        player_obj = self.game.g.afficherImage(x, y, (self.game.SIZE, self.game.SIZE), Textures["P"])
         self.x = player_obj.x
         self.y = player_obj.y
         self.id = player_obj.id
@@ -81,7 +82,7 @@ class Fantome:
             self.type = "F"
             self.x = pos[0]
             self.y = pos[1]
-            self.obj = self.game.g.afficherImage(pos[0], pos[1], (self.game.SIZE, self.game.SIZE), self.game.IMAGES["F"])
+            self.obj = self.game.g.afficherImage(pos[0], pos[1], (self.game.SIZE, self.game.SIZE), Textures[self.type])
             self.id = self.obj.id
             self.game.objects[(self.x, self.y, self.id)] = self
 
@@ -158,7 +159,7 @@ class Bombe:
         Return:
             None
         """
-        self.obj = self.game.g.afficherImage(x, y, (self.game.SIZE, self.game.SIZE), self.game.IMAGES["B"])
+        self.obj = self.game.g.afficherImage(x, y, (self.game.SIZE, self.game.SIZE), Textures[self.type])
         self.id = self.obj.id
         self.game.objects[(self.x, self.y, self.id)] = self
 
@@ -254,7 +255,7 @@ class Upgrade:
         Return:
             None
         """
-        self.obj = self.game.g.afficherImage(x, y, (self.game.SIZE, self.game.SIZE), self.game.IMAGES["U"])
+        self.obj = self.game.g.afficherImage(x, y, (self.game.SIZE, self.game.SIZE), Textures[self.type])
         self.id = self.obj.id
         self.game.objects[(self.x, self.y, self.id)] = self
 
