@@ -181,7 +181,7 @@ class ObjetGraphique:
     x: float
     y: float
     couleur: str
-    type: str=None # Si le type n'est pas spécifié, il est none (permet d'eviter des erreurs)
+    type: str=None # Si le type n'est pas spécifié, il est None (permet d'eviter des erreurs)
 
 
 class Position(NamedTuple):
@@ -225,6 +225,7 @@ class Canevas(tk.Canvas):
         y: float,
         couleur: _Color = "white",
         taille: int = 18,
+        justify: str="left" #Permet de justifier le texte à gauche, au milieu ou à droite.
     ) -> ObjetGraphique:
         """Affiche un texte sur le canevas
 
@@ -240,7 +241,7 @@ class Canevas(tk.Canvas):
         """
         font = Font(family="Helvetica", size=taille, weight="normal")
         return ObjetGraphique(
-            self.create_text(x, y, fill=couleur, text=texte, font=font), x, y, couleur
+            self.create_text(x, y, fill=couleur, text=texte, font=font, justify=justify), x, y, couleur
         )
 
     def dessinerRectangle(

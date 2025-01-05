@@ -1,9 +1,10 @@
 from tkiteasy import ouvrirFenetre
-from map import load_map, initialize_objects
+from map import load_map, initialize_objects, create_background
 from game_objects import Player, Fantome, Bombe, Upgrade, NullObject
 from UI import statistiques, show_game_result
 import config
 import os #module built-in, pas besoins de l'installer
+import random
 
 LARGEUR = config.LARGEUR
 HAUTEUR = config.HAUTEUR
@@ -22,6 +23,7 @@ class Game:
         self.SIZE = None
         self.margin_x = None
         self.margin_y = None
+        self.custom = False
         self.initialize_game()
         self.run()
 
@@ -29,12 +31,14 @@ class Game:
         self.verifyTextures()
         try:
             self.g = ouvrirFenetre(LARGEUR, HAUTEUR)
-            gameMap, self.timer, self.timerfantome, self.SIZE, self.margin_x, self.margin_y = load_map("map0.txt", LARGEUR, HAUTEUR)
+            map_file = random.choice(config.map["custom" if self.custom else "vanilla"])
+            gameMap, self.timer, self.timerfantome, self.SIZE, self.margin_x, self.margin_y = load_map("maps/"+map_file)
             self.TIMERFANTOME = self.timerfantome
+            create_background(self.g, self.SIZE)
             
             # Récupération des objets, la position du joueur et des upgrades
             self.objects, player_pos, upgrades = initialize_objects(
-                gameMap, self.g, self.SIZE, config.Textures, 
+                gameMap, self.g, self.SIZE, 
                 self.margin_x, self.margin_y
             )
             
@@ -199,20 +203,24 @@ class Game:
                 "play again": "space"
             }
         
-    """verifier si les textures dans config.Textures existent bien"""
     def verifyTextures(self) -> None:
         """
-        Fonction permettant de vérifier si toutes les textures dans config.Textures existent.
+        Fonction permettant de vérifier si toutes les textures (images et couleurs) dans config.Textures et config.colors existent.
         Si ce n'est pas le cas, une erreur est créer.
         """
         texturesToCheck = {"P", "U", "F", "B", "M", "E", "C"}
+        colorsToCheck = {"inside", "outside", "hud"}
         missing_textures = []
         for texture in texturesToCheck:
             if texture not in config.Textures or not os.path.isfile(config.Textures[texture]):
                 missing_textures.append(texture)
 
+        for color in colorsToCheck:
+            if color not in config.colors:
+                missing_textures.append(color)
+
         if missing_textures:
-            raise FileNotFoundError(f"Les textures suivantes sont manquantes ou n'existent pas : {', '.join(missing_textures)}")
+            raise FileNotFoundError(f"Les textures ou couleurs suivantes sont manquantes ou n'existent pas : {', '.join(missing_textures)}")
 
 
     def run(self) -> None:

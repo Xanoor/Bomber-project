@@ -37,7 +37,7 @@ def show_game_result(g: object, points: int) -> str:
         longueur_rect, largeur_rect = size_text * len(final_message), size_text * 3
         x_rect, y_rect = LARGEUR/2 - (longueur_rect/2), HAUTEUR/2 - (largeur_rect / 2)
         g.dessinerRectangle(x_rect, y_rect, longueur_rect, largeur_rect, "gray")
-        g.afficherTexte(final_message + "\n    Score : " + str(points), LARGEUR/2, HAUTEUR/2, "white", size_text)
+        g.afficherTexte(final_message + "\nScore : " + str(points), LARGEUR/2, HAUTEUR/2, "white", size_text, "center")
         return endGameOptions(g)
 
 
