@@ -50,10 +50,11 @@ def endGameOptions(g: object) -> str:
     Return :
         choice[key] (str) : choix de fin de jeu retourné par la fonction endGameOptions.
     """
-    g.afficherTexte("RECOMMENCER ? (Espace)", LARGEUR/4, HAUTEUR/1.5, "white", 20)
-    g.afficherTexte("ARRÊTER ? (Echap)", LARGEUR/1.25, HAUTEUR/1.5, "white", 20)
+    g.afficherTexte("RECOMMENCER ? (Espace)", LARGEUR/2, HAUTEUR/1.35, "white", 20)
+    g.afficherTexte("ARRÊTER ? (Echap)", LARGEUR/2, HAUTEUR/1.5, "white", 20)
+    g.afficherTexte("CHANGER DE MODE ? (M)", LARGEUR/2, HAUTEUR/1.2, "white", 20)
     key = None
-    choice = {keys["play again"]: "play again", keys["quit"]: "quit"}
+    choice = {keys["play again"]: "play again", keys["quit"]: "quit", keys["change mode"]: "change mode"}
     while True:
         key = g.attendreTouche().lower()
         if key in choice: 

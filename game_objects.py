@@ -56,6 +56,28 @@ class Player:
         self.x = self.object.x
         self.y = self.object.y
 
+    def on_portal(self, pos: list) -> None:
+        """
+        Fonction vérifiant si le joueur se trouve sur un portail.
+        
+        Args:
+            pos (list) : Liste contenant les coordonnées (x, y) des portails de la carte
+        """
+        actual_pos = (self.game.player.x, self.game.player.y)
+        if (actual_pos in pos):
+            self.teleport(pos, actual_pos)
+
+    def teleport(self, portal: list, pos: tuple) -> None:
+        """
+        Fonction déplaçant le joueur sur le portail à l'opposé de la carte
+
+        Args:
+            portal (list) : Liste contenant les coordonnées (x, y) des portails de la carte.
+            pos (tuple): Position (x, y) du joueur.
+        """
+        for port in portal:
+            if port[0] != pos[0] and port[1] == pos[1]:
+                Player.move(self, port[0] - pos[0], 0)
 
 # Classe des fantomes
 class Fantome:
@@ -281,3 +303,16 @@ class Upgrade:
 
             del self.game.objects[(self.x, self.y, self.id)]
             self.game.g.supprimer(self.obj)
+            
+# CUSTOM
+
+class Nappe:
+    def __init__(self, pos: list, game: object):
+        self.game = game
+        self.pos = pos
+        self.type = "N"
+        self.on_puddle()
+        
+    def on_puddle(self):
+        if ((self.game.player.x, self.game.player.y) in self.pos):
+            self.game.player.damage()            

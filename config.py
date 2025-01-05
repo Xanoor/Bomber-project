@@ -1,15 +1,15 @@
 
 #Taille de la fenêtre
-LARGEUR = 1500
-HAUTEUR = 1000
+LARGEUR = 800
+HAUTEUR = 600
 
 # Nom du fichier de la carte.
 map = {"vanilla": [
-           "map0.txt", "map1.txt", "map2.txt"
+        "map0.txt", "map1.txt", "map2.txt"
         ],
        
         "custom": [
-           ""
+            "map0_custom.txt", "map1_custom.txt", "map2_custom.txt"
         ]
 }
 
@@ -26,7 +26,8 @@ keys = {
 
     #Touches pour quitter ou rejouer
     "quit": "escape",
-    "play again": "space"
+    "play again": "space",
+    "change mode": "m"
 }
 
 #Textures utilisées
@@ -37,7 +38,9 @@ Textures = {
             "F": "textures/fantome.png",
             "B": "textures/bombe.png",
             "U": "textures/upgrade.png",
-            "P": "textures/player2.png"
+            "P": "textures/player.png",
+            "N": "textures/nappe.png",
+            "T": "textures/portal.png"
 }
 
 #Couleurs utilisées

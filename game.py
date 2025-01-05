@@ -1,6 +1,6 @@
 from tkiteasy import ouvrirFenetre
 from map import load_map, initialize_objects, create_background
-from game_objects import Player, Fantome, Bombe, Upgrade, NullObject
+from game_objects import Player, Fantome, Bombe, Upgrade, NullObject, Nappe
 from UI import statistiques, show_game_result
 import config
 import os #module built-in, pas besoins de l'installer
@@ -10,20 +10,20 @@ LARGEUR = config.LARGEUR
 HAUTEUR = config.HAUTEUR
 
 class Game:
-    def __init__(self):
+    def __init__(self, custom):
+        self.custom = custom
         self.g = None
         self.gameover = False
         self.objects = {}
         self.stats_obj = None
         self.explosions = []
-        self.cases = {"bloquantes": {"M", "C", "E", "P", "F"}, "non-bloquantes": {"U", "B"}}
+        self.cases = {"bloquantes": {"M", "C", "E", "P", "F", "T"}, "non-bloquantes": {"U", "B", "N"}}
         self.timer = None
         self.timerfantome = None
         self.player = None
         self.SIZE = None
         self.margin_x = None
         self.margin_y = None
-        self.custom = False
         self.initialize_game()
         self.run()
 
@@ -31,17 +31,24 @@ class Game:
         self.verifyTextures()
         try:
             self.g = ouvrirFenetre(LARGEUR, HAUTEUR)
-            map_file = random.choice(config.map["custom" if self.custom else "vanilla"])
-            gameMap, self.timer, self.timerfantome, self.SIZE, self.margin_x, self.margin_y = load_map("maps/"+map_file)
+            customOrVanilla = "custom" if self.custom else "vanilla"
+            map_file = random.choice(config.map[customOrVanilla])
+            gameMap, self.timer, self.timerfantome, self.SIZE, self.margin_x, self.margin_y = load_map("maps/"+ customOrVanilla + "/" + map_file)
             self.TIMERFANTOME = self.timerfantome
             create_background(self.g, self.SIZE)
             
             # Récupération des objets, la position du joueur et des upgrades
-            self.objects, player_pos, upgrades = initialize_objects(
+            self.objects, player_pos, upgrades, self.pos_puddle, self.pos_portal  = initialize_objects(
                 gameMap, self.g, self.SIZE, 
                 self.margin_x, self.margin_y
             )
-            
+            # Si le mode custom n'est pas activé, l'on supprime les flaques
+            if not self.custom:
+                for obj in list(self.objects.values()):
+                    if obj.type == "N":
+                        self.g.supprimer(obj)
+                        del self.objects[(obj.x, obj.y, obj.id)]
+
             # Creation du joueur (player)
             self.player = Player(player_pos[0], player_pos[1], self)
             
@@ -143,6 +150,9 @@ class Game:
         self.callUpdate({"B"}) # La consigne oblige de faire déja déplacer les fantomes, puis faire mettre a jour les bombes
                                # il y aura donc deux appels de cette fonction pour la fonction callUpdate, une pour fantomes et upgrades et une pour bombes
 
+        if self.custom: # Si l'on joue à la version custom                     
+            Nappe(self.pos_puddle, self)
+            
         # Mise a jour des timers
         self.timer -= 1
         self.timerfantome -= 1
@@ -157,7 +167,7 @@ class Game:
             self.SIZE, self.SIZE + self.SIZE//2
         )
         
-        if self.gameover: #Si le joueur à gagné ou perdu, on affiche du texte.
+        if self.gameover: #Si le jeu est fini, on affiche du texte.
             self.displayUI()
 
     def callUpdate(self, type_obj: set) -> None:
@@ -182,7 +192,9 @@ class Game:
         player_choice = show_game_result(self.g, self.player.points)
 
         if player_choice == "play again": #Si le joueur veut rejouer, on relance
-            Game()
+            Game(self.custom)
+        elif player_choice == "change mode":
+            Game(not self.custom)
         else:                             #Sinon, on quitte
             exit()
 
@@ -200,7 +212,8 @@ class Game:
                 "left": "q",
                 "place_bomb": "e",
                 "quit": "escape",
-                "play again": "space"
+                "play again": "space",
+                "change mode": "m"
             }
         
     def verifyTextures(self) -> None:
@@ -248,14 +261,15 @@ class Game:
                         self.displayUI()
 
                     for obj in case:
-                        if obj.type in self.cases["bloquantes"]:
-                            case = False
+                        if obj.type in self.cases["bloquantes"] and not obj.type == "T":   # Une exception est créer pour les types "T"
+                            case = False                                                   # En effet, il s'agit du seul type qui doit être bloquant pour les fantomes SEULEMENT
                             continue
 
                     if not case: # Si la case n'est pas disponible, on reprend au début
                         continue
 
                     self.player.move(self.SIZE * keys_dirs[key][0], self.SIZE * keys_dirs[key][1])
+                    self.player.on_portal(self.pos_portal)
                     self.update()
                 elif key == config.keys["place_bomb"] and not self.gameover:
                     # On verifie si la case est déja un bombe ou non.

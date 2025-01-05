@@ -93,13 +93,13 @@ def initialize_objects(gameMap, g: object, SIZE: int, margin_x: int, margin_y: i
         upgrades (list) : Liste contenant des tuples des coordonées des upgrades
     """
     objects = {}
-    upgrades = []
+    upgrades, pos_puddle, pos_portal = [], [], []
     player = None
     for y in range(len(gameMap)):
         if y > 2:
             # Si les deux cases du HUD sont passées, créer pour chaque "ligne", un fond de la couleur de l'intérieur
-            # ((len(gameMap[y])+1)*SIZE)-margin_x  permet de calculer la largeur - la marge_x
-            g.dessinerRectangle(margin_x, y*SIZE, ((len(gameMap[y])+1)*SIZE)-margin_x, SIZE, colors["inside"])
+            # ((len(gameMap[y])+1)*SIZE)  permet de calculer la largeur
+            g.dessinerRectangle(margin_x, y*SIZE, (len(gameMap[y])-1)*SIZE, SIZE, colors["inside"])
         for x in range(len(gameMap[y])):
             if gameMap[y][x] == "U":
                 upgrades.append((SIZE*x, SIZE*y))
@@ -108,6 +108,10 @@ def initialize_objects(gameMap, g: object, SIZE: int, margin_x: int, margin_y: i
             elif gameMap[y][x] in Textures:
                 obj = g.afficherImage(SIZE * x+margin_x, SIZE * y+margin_y, (SIZE, SIZE), Textures[gameMap[y][x]])
                 obj.type = gameMap[y][x]
+                if gameMap[y][x] == "N":
+                    pos_puddle += [(SIZE*x+margin_x, SIZE*y+margin_y)]
+                elif gameMap[y][x] == "T":
+                    pos_portal += [(SIZE*x+margin_x, SIZE*y+margin_y)]                
                 objects[(SIZE * x+margin_x, SIZE * y+margin_y, obj.id)] = obj
 
-    return objects, player, upgrades
+    return objects, player, upgrades, pos_puddle, pos_portal
