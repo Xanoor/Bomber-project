@@ -1,4 +1,4 @@
-from config import HAUTEUR, LARGEUR, colors, Textures, map
+from config import HAUTEUR, LARGEUR, colors, Textures
 import os
 
 def load_map(file_path: str):

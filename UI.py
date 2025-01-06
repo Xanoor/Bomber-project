@@ -97,5 +97,5 @@ def endGameOptions(g: object) -> str:
     while True:
         key = g.attendreTouche().lower()
         if key in choice: 
-            g.fermerFenetre()
+            # g.fermerFenetre()
             return choice[key]

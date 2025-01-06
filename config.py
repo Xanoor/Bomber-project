@@ -5,7 +5,7 @@ HAUTEUR = 600
 
 # Nom du fichier de la carte.
 map = {"vanilla": [
-        "map0.txt", "map1.txt", "map2.txt", "map3.txt"
+        "map0.txt", "map1.txt", "map2.txt"
         ],
        
         "custom": [
@@ -55,3 +55,6 @@ colors = {
     "outside": "#108f32",
     "hud": "#505050"
 }
+
+# Si cette option est activée, le jeu sera lancé en mode custom.
+customMode = False

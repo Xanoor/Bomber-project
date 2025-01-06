@@ -411,7 +411,11 @@ class Canevas(tk.Canvas):
         Args:
             obj (ObjetGraphique): L'objet graphique à supprimer
         """
-        self.delete(obj.id)
+        if obj == "all":
+            self.delete("all")
+        else:
+            self.delete(obj.id)
+
 
     def changerCouleur(self, obj: ObjetGraphique, couleur: _Color) -> None:
         """Change la couleur d'un objet graphique.
