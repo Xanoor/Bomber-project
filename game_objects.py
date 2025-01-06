@@ -9,7 +9,7 @@ class NullObject:
         self.type = type
 
 # Classe du joueur
-class Player:
+class Bomber:
     def __init__(self, x: int, y: int, game: object):
         self.game = game
         self.pv = 3
@@ -77,7 +77,7 @@ class Player:
         """
         for port in portal:
             if port[0] != pos[0] and port[1] == pos[1]:
-                Player.move(self, port[0] - pos[0], 0)
+                Bomber.move(self, port[0] - pos[0], 0)
 
 # Classe des fantomes
 class Fantome:

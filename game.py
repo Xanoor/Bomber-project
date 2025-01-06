@@ -1,6 +1,6 @@
 from tkiteasy import ouvrirFenetre
 from map import load_map, initialize_objects, create_background
-from game_objects import Player, Fantome, Bombe, Upgrade, NullObject, Nappe
+from game_objects import Bomber, Fantome, Bombe, Upgrade, NullObject, Nappe
 from UI import statistiques, showGameResult, defaultUIIcons
 import config
 import os #module built-in, pas besoins de l'installer
@@ -67,7 +67,7 @@ class Game:
                 exit()
 
             # Création du joueur (player)
-            self.player = Player(player_pos[0], player_pos[1], self)
+            self.player = Bomber(player_pos[0], player_pos[1], self)
             
             # Création des upgrades
             for upgrade in upgrades:
