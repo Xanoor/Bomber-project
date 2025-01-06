@@ -204,7 +204,7 @@ class Bombe:
         for i in range(1, dist+1):
             position = (x + (self.game.SIZE * dirx * i), y + (self.game.SIZE * diry * i))
             # La fonction any retourne True si la condition est vérifiée au moins une fois, sinon False
-            hasTypeC = any(element.type == "C" or element.type == "E" for element in self.game.getCase(position[0], position[1]))
+            hasTypeC = any(element.type in ["C", "E", "T", "N"] for element in self.game.getCase(position[0], position[1]))
             if hasTypeC: break #Si la position contient une colonne ou une prise ethernet, on s'arrete et n'ajoutons pas la position.
 
             pattern.append(position)

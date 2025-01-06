@@ -54,13 +54,6 @@ class Game:
                 print("Le joueur n'est pas présent sur carte lors de l'initialization !")
                 exit()
 
-            # Si le mode custom n'est pas activé, l'on supprime les flaques
-            if not self.custom:
-                for obj in list(self.objects.values()):
-                    if obj.type == "N":
-                        self.g.supprimer(obj)
-                        del self.objects[(obj.x, obj.y, obj.id)]
-
             # Creation du joueur (player)
             self.player = Player(player_pos[0], player_pos[1], self)
             
