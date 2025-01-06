@@ -1,7 +1,7 @@
 from tkiteasy import ouvrirFenetre
 from map import load_map, initialize_objects, create_background
 from game_objects import Player, Fantome, Bombe, Upgrade, NullObject, Nappe
-from UI import statistiques, show_game_result
+from UI import statistiques, showGameResult, defaultUIIcons
 import config
 import os #module built-in, pas besoins de l'installer
 import random
@@ -15,6 +15,7 @@ class Game:
         self.g = None
         self.gameover = False
         self.objects = {}
+        self.timer_obj = None
         self.stats_obj = None
         self.explosions = []
         self.cases = {"bloquantes": {"M", "C", "E", "P", "F", "T"}, "non-bloquantes": {"U", "B", "N"}}
@@ -29,6 +30,10 @@ class Game:
 
     def initialize_game(self) -> None:
         self.verifyTextures()
+
+        # Si la taille de la fenêtre est trop petite, on affiche une erreur !
+        if LARGEUR < 400 or HAUTEUR < 400:
+            raise ValueError(f"La taille de la fenêtre ({LARGEUR}x{HAUTEUR}) est trop petite. Minimum requis : 400x400.")
         try:
             self.g = ouvrirFenetre(LARGEUR, HAUTEUR)
             customOrVanilla = "custom" if self.custom else "vanilla"
@@ -42,6 +47,11 @@ class Game:
                 gameMap, self.g, self.SIZE, 
                 self.margin_x, self.margin_y
             )
+
+            if player_pos is None:
+                print("Le joueur n'est pas présent sur carte lors de l'initialization !")
+                exit()
+
             # Si le mode custom n'est pas activé, l'on supprime les flaques
             if not self.custom:
                 for obj in list(self.objects.values()):
@@ -55,15 +65,16 @@ class Game:
             # Creation des upgrades
             for upgrade in upgrades:
                 Upgrade(upgrade[0], upgrade[1], self)
-                
-            self.stats_obj = statistiques(
-                self.g, self.stats_obj, self.timer, 
+            # self.g.afficherTexte()
+            defaultUIIcons(self.g, self.SIZE)
+            self.timer_obj, self.stats_obj = statistiques(
+                self.g, self.timer_obj, self.stats_obj, self.timer, 
                 self.player.pv, self.player.points, self.player.level, 
-                self.SIZE, self.SIZE + self.SIZE//2
+                self.SIZE
             )
         except Exception as e: #Si une erreur survient lors du lancement du jeu, quitter le jeu.
-            print(f"Erreur lors de l'initialisation du jeu ! \n{e}")
-            exit()
+            raise Exception (f"Erreur lors de l'initialisation du jeu ! \n{e}")
+
         
 
     def getCase(self, x: int, y: int) -> list:
@@ -161,10 +172,10 @@ class Game:
             self.gameover = True
             
         # Mise a jour des statistique (UI)
-        statistiques(
-            self.g, self.stats_obj, self.timer, 
+        self.timer_obj, self.stats_obj = statistiques(
+            self.g, self.timer_obj, self.stats_obj, self.timer, 
             self.player.pv, self.player.points, self.player.level, 
-            self.SIZE, self.SIZE + self.SIZE//2
+            self.SIZE
         )
         
         if self.gameover: #Si le jeu est fini, on affiche du texte.
@@ -189,7 +200,7 @@ class Game:
         """
         Fonction permettant d'afficher du texte et de recommencer le jeu OU de l'arrêter.
         """
-        player_choice = show_game_result(self.g, self.player.points)
+        player_choice = showGameResult(self.g, self.player.points)
 
         if player_choice == "play again": #Si le joueur veut rejouer, on relance
             Game(self.custom)
@@ -222,11 +233,16 @@ class Game:
         Si ce n'est pas le cas, une erreur est créer.
         """
         texturesToCheck = {"P", "U", "F", "B", "M", "E", "C"}
+        texturesHUDToCheck = {"coeur", "timer"}
         colorsToCheck = {"inside", "outside", "hud"}
         missing_textures = []
         for texture in texturesToCheck:
             if texture not in config.Textures or not os.path.isfile(config.Textures[texture]):
                 missing_textures.append(texture)
+
+        for textureHUD in texturesHUDToCheck:
+            if textureHUD not in config.Textures_HUD or not os.path.isfile(config.Textures_HUD[textureHUD]):
+                missing_textures.append(textureHUD)
 
         for color in colorsToCheck:
             if color not in config.colors:

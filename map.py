@@ -14,10 +14,8 @@ def load_map(file_path: str):
         margin_x (int) : Marge sur le bord gauche de la fenêtre
         margin_y (int) : Marge sur le bord haut de la fenêtre
     """
-
     if type(file_path) != str or not os.path.isfile(file_path):
-        print("Erreur, ce ne sont pas les bons paramètres ou le chemin vers la carte n'existe pas !")
-        exit()
+        raise BaseException("Erreur, ce ne sont pas les bons paramètres ou le chemin vers la carte n'existe pas !")
 
     gameMap = [[]]*2 #On créer deux lignes vide pour mettre les stats !
     timer = None
@@ -42,7 +40,7 @@ def load_map(file_path: str):
         print("Erreur, les variables timer et/ou timerfantome ne sont pas présente dans le fichier de configuration")
         exit()
 
-    SIZE = min(LARGEUR // len(maxLength)+1, HAUTEUR // len(gameMap)) #Permet de définir la taille d'une cellule en fonction de la taille de l'écran et des la carte.
+    SIZE = min(LARGEUR // len(maxLength)-1, HAUTEUR // len(gameMap)) #Permet de définir la taille d'une cellule en fonction de la taille de l'écran et des la carte.
     if SIZE > 75: SIZE=75 # On évite que chaque cases soit énorme (ultra zommé)
 
     map_width = len(maxLength) * SIZE  # Largeur de la carte jouable en pixels
@@ -55,7 +53,10 @@ def load_map(file_path: str):
     margin_x -= margin_x % SIZE
     margin_y -= margin_y % SIZE
     
-    return gameMap, int(timer), int(timerfantome), SIZE, abs(margin_x), abs(margin_y)
+    if margin_x < 0: margin_x=0
+    if margin_y < 0: margin_y=0
+
+    return gameMap, int(timer), int(timerfantome), SIZE, margin_x, margin_y
 
 
 def create_background(g: object, SIZE: int) -> None:
@@ -66,7 +67,7 @@ def create_background(g: object, SIZE: int) -> None:
     Nous faisons +10 à la taille de la fenêter car parfois, un petit jour apparait.
     Args:
         g (object) : Instance de la fenêtre (tkiteasy).
-        SIZE (int) : Taille d'une case.
+        SIZE (int) : Taille d'une cellule.
     Return:
         None
     """
@@ -75,7 +76,7 @@ def create_background(g: object, SIZE: int) -> None:
         return
 
     g.dessinerRectangle(0, 0, LARGEUR+10, SIZE*2, colors["hud"])
-    g.dessinerRectangle(0, SIZE*2, LARGEUR+10, HAUTEUR-(SIZE*2), colors["outside"])
+    g.dessinerRectangle(0, SIZE*2, LARGEUR+10, HAUTEUR-(SIZE*2), colors["outside"], "background")
 
 
 def initialize_objects(gameMap, g: object, SIZE: int, margin_x: int, margin_y: int):
@@ -96,12 +97,11 @@ def initialize_objects(gameMap, g: object, SIZE: int, margin_x: int, margin_y: i
     upgrades, pos_puddle, pos_portal = [], [], []
     player = None
     for y in range(len(gameMap)):
-        if y > 2:
-            # Si les deux cases du HUD sont passées, créer pour chaque "ligne", un fond de la couleur de l'intérieur
-            # ((len(gameMap[y])+1)*SIZE)  permet de calculer la largeur
-            g.dessinerRectangle(margin_x, y*SIZE, (len(gameMap[y])-1)*SIZE, SIZE, colors["inside"])
+        emptyLine = 0
         for x in range(len(gameMap[y])):
-            if gameMap[y][x] == "U":
+            if gameMap[y][x] == "-":
+                emptyLine+=1
+            elif gameMap[y][x] == "U":
                 upgrades.append((SIZE*x, SIZE*y))
             elif gameMap[y][x] == "P":
                 player = (SIZE*x+margin_x, SIZE*y+margin_y)
@@ -113,5 +113,9 @@ def initialize_objects(gameMap, g: object, SIZE: int, margin_x: int, margin_y: i
                 elif gameMap[y][x] == "T":
                     pos_portal += [(SIZE*x+margin_x, SIZE*y+margin_y)]                
                 objects[(SIZE * x+margin_x, SIZE * y+margin_y, obj.id)] = obj
+        if y > 2:
+            # Si les deux cases du HUD sont passées, créer pour chaque "ligne", un fond de la couleur de l'intérieur
+            # ((len(gameMap[y])+1)*SIZE)  permet de calculer la largeur
+            g.dessinerRectangle(margin_x+(emptyLine*SIZE), (y*SIZE)+margin_y, (len(gameMap[y])-1)*SIZE-(emptyLine*SIZE), SIZE, colors["inside"], "background")
 
     return objects, player, upgrades, pos_puddle, pos_portal

@@ -5,7 +5,7 @@ HAUTEUR = 600
 
 # Nom du fichier de la carte.
 map = {"vanilla": [
-        "map0.txt", "map1.txt", "map2.txt"
+        "map0.txt", "map1.txt", "map2.txt", "map3.txt"
         ],
        
         "custom": [
@@ -33,7 +33,7 @@ keys = {
 #Textures utilisées
 Textures = {
             "C": "textures/colonne.png",
-            "M": "textures/mur0.png",
+            "M": "textures/mur.png",
             "E": "textures/ethernet.png",
             "F": "textures/fantome.png",
             "B": "textures/bombe.png",
@@ -43,9 +43,15 @@ Textures = {
             "T": "textures/portal.png"
 }
 
+#Textures utilisées pour l'HUD
+Textures_HUD = {
+    "coeur" : "textures/coeur.png",
+    "timer" : "textures/timer.png"
+}
+
 #Couleurs utilisées
 colors = {
     "inside" : "#707070",
-    "outside": "green",
+    "outside": "#108f32",
     "hud": "#505050"
 }

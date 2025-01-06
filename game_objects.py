@@ -99,7 +99,7 @@ class Fantome:
             None
         """
         pos = self.game.checkNeightbor(x, y)
-        if len(pos) > 1: # Si la prise n'est pas bloquée:
+        if len(pos) > 0: # Si la prise n'est pas bloquée:
             pos = random.choice(pos)
             self.type = "F"
             self.x = pos[0]
@@ -315,4 +315,4 @@ class Nappe:
         
     def on_puddle(self):
         if ((self.game.player.x, self.game.player.y) in self.pos):
-            self.game.player.damage()            
+            self.game.player.damage()
