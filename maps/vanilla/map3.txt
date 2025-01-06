@@ -1,26 +1,26 @@
 timer  1000
 timerfantome 40
 
-----------------------------CCCCCCCCCCCCCCCCCCCCC
-----------------------------CEMM             MMEC
-----------------------------C M  MCCC   CCCM  M C
-----------------------------C M  MMMM   MMMM  M C
-----------------------------C    MCCC   CCCM    C
-----------------------------C M  MMMM   MMMM  M C
-----------------------------C M               M C
-----------------------------C MMCMMMM   MMMCMMM C
-----------------------------CMMCCCMMM   MMCCCMMMC
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCMMMCMMMM   MMMCMMMMC
-CECCCCCCCCCMMMMCMMMMCCCCCCCCCMMEM               C
-C                               CM MC    MC CM  C
-C  MMMMCCCCCCCCMMMCCCCCCCCCMMMM                 C
-C  CMMMMMMMMMMMCCCMMMMMMMMMMMMC      CMMMC      CCCCCCCCCCCCCCCC
-C  C                          M                 CCCCMMMMMMMMMMEC
-C  C   CCCCMMMM  MMMMCCCC                       MMMMMMCCCCMMMMMC
-C  C   CCCCMMMM  MMMMCCCC P        C                           C
-C  C                          M    C     CMMMMMMMMMMMMMMMMMMC  C
-C  CMMMMMMMMMMMM  MMMMMMMMMMMMM    C     MMMMCMMMMCCMMMMCMMMM  C
-C  CMCCCMMMCCCCC  CCCCCMMMCCCMC    C     CCCCCCCCCCCCCCCCCCCC  C
-C                                                              C
-CECCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCEC
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+-----------CCCCCCCCCCCCCCCCCCCCCCC
+-----------CCEMM             MMECC
+-----------CC M  MCCC   CCCM  M CC
+-----------CC M  MMMM   MMMM  M CC
+-----------CC    MCCC   CCCM    CC
+-----------CC M  MMMM   MMMM  M CC
+-----------CC M               M CC
+-----------CC MMCMMMM   MMMCMMM CC
+-----------CCMMCCCMMM   MMCCCMMMCC
+CCCCCCCCCCCCCMMMCMMMM   MMMCMMMMCC
+CCECCCCCCCCCCMMEM               CC
+CC              CM MC    MC CM  CC
+CC                              CC
+CC  CMMMMMMMMMMC      CMMMC     CCCCCCCCCCCCCCCCC
+CC  C          M                CCCCMMMMMMMMMMECC
+CC  C    M                      MMMMMMCCCCMMMMMCC
+CC  C    M P        C                          CC
+CC  C          M    C    CMMMMMMMMMMMMMMMMMMC  CC
+CC  C MMMMMMMMMMMMM    C    MMMMCMMMMMMMCMMMM  CC
+CC  CCCCMMMCCCMC    C    CCCCCCCCCCCCCCCCCCCC  CC
+CC                                             CC
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCECC
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
