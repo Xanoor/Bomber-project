@@ -114,7 +114,9 @@ def initialize_objects(gameMap, g: object, SIZE: int, margin_x: int, margin_y: i
                 objects[(SIZE * x+margin_x, SIZE * y+margin_y, obj.id)] = obj
         if y > 2:
             # Si les deux cases du HUD sont passées, créer pour chaque "ligne", un fond de la couleur de l'intérieur
-            # ((len(gameMap[y])-1)*SIZE)  permet de calculer la largeur
-            g.dessinerRectangle(margin_x+(emptyLine*SIZE), (y*SIZE)+margin_y, (len(gameMap[y])-1)*SIZE-(emptyLine*SIZE), SIZE, colors["inside"], "background")
+            BG_X = margin_x+(emptyLine*SIZE)
+            BG_Y = (y*SIZE)+margin_y
+            WIDTH = (len(gameMap[y])-1)*SIZE-(emptyLine*SIZE)
+            g.dessinerRectangle(BG_X, BG_Y, WIDTH, SIZE, colors["inside"], "background")
 
     return objects, player, upgrades, pos_puddle, pos_portal
