@@ -12,7 +12,6 @@ HAUTEUR = config.HAUTEUR
 class Game:
     def __init__(self, custom=config.customMode):
         self.custom = custom
-        # self.g = None
         self.gameover = False
         self.objects = {}
         self.timer_obj = None

@@ -21,7 +21,7 @@ class Player:
         self.points = 0
         self.object = self.createPlayer(x, y)
 
-    def createPlayer(self, x: int, y: int):
+    def createPlayer(self, x: int, y: int) -> object:
         """
         Permet de créer le joueur.
         Args:
@@ -36,7 +36,7 @@ class Player:
         self.id = player_obj.id
         return player_obj
          
-    def damage(self):
+    def damage(self) -> None:
         """
         Fonction appelée lorsque le joueur est touché par une bombe ou attaqué par un fantome.
         """
@@ -45,7 +45,7 @@ class Player:
         if self.pv <= 0:
             self.game.gameover = True
 
-    def move(self, x: int, y: int):
+    def move(self, x: int, y: int) -> None:
         """
         Fonction appelée afin de faire bouger le joueur.
         Args:
@@ -89,7 +89,7 @@ class Fantome:
         self.lastPos = None
         self.createFantom(x, y)
         
-    def createFantom(self, x: int, y: int):
+    def createFantom(self, x: int, y: int) -> None:
         """
         Fonction permettant de créer un fantome, le fantome apparait a coté d'une prise éthernet.
         Args:
@@ -108,7 +108,7 @@ class Fantome:
             self.id = self.obj.id
             self.game.objects[(self.x, self.y, self.id)] = self
 
-    def isPlayerNeighbor(self, neightbor: list):
+    def isPlayerNeighbor(self, neightbor: list) -> bool:
         """
         Fonction qui vérifie si le joueur est voisin ou non.
         Args:
@@ -121,7 +121,7 @@ class Fantome:
                 return True
         return False
     
-    def hitByBomb(self):
+    def hitByBomb(self) -> None:
         """
         Fonction qui se déclanche lorsque le fantome est touché par une bombe.
         Le fantome est supprimé et laisse place a une upgrade.
@@ -130,7 +130,7 @@ class Fantome:
         self.game.g.supprimer(self.obj)
         Upgrade(self.x, self.y, self.game)
     
-    def update(self):
+    def update(self) -> None:
         """
         Fonction appelée a chaque étape de jeu, sert a bouger le fantome.
         """
@@ -172,7 +172,7 @@ class Bombe:
         self.cooldown: int = 6 # 5-1 car on met direct a jour le tour (ce qui retire un au cooldown)
         self.createBomb(x, y)
 
-    def createBomb(self, x: int, y: int):
+    def createBomb(self, x: int, y: int) -> None:
         """
         Fonction permettant de créer une bombe. Elle créer l'objets graphique, les données et enregistre tout dans le dictionnaire objects.
         Params:
@@ -211,7 +211,7 @@ class Bombe:
 
         return pattern + self.getExplosionPattern(x, y, -diry, dirx, dist, s+1)
 
-    def explosion(self):
+    def explosion(self) -> None:
         """
         Fonction appelée afin de faire exploser la bombe.
         """
@@ -236,7 +236,7 @@ class Bombe:
                                         (self.game.SIZE, self.game.SIZE), 
                                         "textures/explosion.png"))
 
-    def hitByBomb(self):
+    def hitByBomb(self) -> None:
         """
         Fonction qui se déclanche lorsque la bombe est touché par une autre bombe.
         Le cooldown est mit à 0 et le fonction update est appelée (celle-ci fera exploser la bombe).
@@ -245,7 +245,7 @@ class Bombe:
             self.cooldown = 0
             self.update()
 
-    def update(self):
+    def update(self) -> None:
         """
         Fonction appellée à chaque étape du jeu (chaque déplacement du joueur).
         """
@@ -268,7 +268,7 @@ class Upgrade:
         self.type = "U"
         self.createUpgrade(x, y)
 
-    def createUpgrade(self, x: int, y: int):
+    def createUpgrade(self, x: int, y: int) -> None:
         """
         Fonction permettant de créer une upgrade. Elle créer l'objets graphique, les données et enregistre tout dans le dictionnaire objects.
         Params:
@@ -281,7 +281,7 @@ class Upgrade:
         self.id = self.obj.id
         self.game.objects[(self.x, self.y, self.id)] = self
 
-    def hitByBomb(self):
+    def hitByBomb(self) -> None:
         """
         Fonction qui se déclanche lorsque l'upgrade est touchée par une bombe.
         L'upgrade est supprimé.
@@ -289,7 +289,7 @@ class Upgrade:
         del self.game.objects[(self.x, self.y, self.id)]
         self.game.g.supprimer(self.obj)
 
-    def update(self):
+    def update(self) -> None:
         """
         Fonction appellée à chaque étape du jeu (chaque déplacement du joueur).
         """
@@ -313,6 +313,6 @@ class Nappe:
         self.type = "N"
         self.on_puddle()
         
-    def on_puddle(self):
+    def on_puddle(self) -> None:
         if ((self.game.player.x, self.game.player.y) in self.pos):
             self.game.player.damage()

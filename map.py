@@ -1,7 +1,7 @@
 from config import HAUTEUR, LARGEUR, colors, Textures
 import os
 
-def load_map(file_path: str):
+def load_map(file_path: str) -> tuple[list, int, int, int, int, int]:
     """
     Charge la carte ainsi que les variables timer et timerfantome depuis un fichier.
     Args:
@@ -52,8 +52,8 @@ def load_map(file_path: str):
     margin_x -= margin_x % SIZE
     margin_y -= margin_y % SIZE
     
-    if margin_x < 0: margin_x=0
-    if margin_y < 0: margin_y=0
+    if margin_x < 0: margin_x=0 #Si la marge est négative, on la désactive
+    if margin_y < 0: margin_y=0 #Si la marge est négative, on la désactive
 
     return gameMap, int(timer), int(timerfantome), SIZE, margin_x, margin_y
 
@@ -78,7 +78,7 @@ def create_background(g: object, SIZE: int) -> None:
     g.dessinerRectangle(0, SIZE*2, LARGEUR+10, HAUTEUR-(SIZE*2), colors["outside"], "background")
 
 
-def initialize_objects(gameMap, g: object, SIZE: int, margin_x: int, margin_y: int):
+def initialize_objects(gameMap, g: object, SIZE: int, margin_x: int, margin_y: int) -> tuple[dict, tuple, list, list, list]:
     """
     Initialise les objets de la carte.
     Args:
