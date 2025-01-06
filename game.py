@@ -10,9 +10,9 @@ LARGEUR = config.LARGEUR
 HAUTEUR = config.HAUTEUR
 
 class Game:
-    def __init__(self, custom):
+    def __init__(self, custom=config.customMode):
         self.custom = custom
-        self.g = None
+        # self.g = None
         self.gameover = False
         self.objects = {}
         self.timer_obj = None
@@ -29,19 +29,22 @@ class Game:
         self.run()
 
     def initialize_game(self) -> None:
+        #Si la classe Game n'a pas l'attribut g, on fait rien.
+        if not hasattr(self, "g"):
+            self.g = ouvrirFenetre(LARGEUR, HAUTEUR)
+
         self.verifyTextures()
 
         # Si la taille de la fenêtre est trop petite, on affiche une erreur !
         if LARGEUR < 400 or HAUTEUR < 400:
             raise ValueError(f"La taille de la fenêtre ({LARGEUR}x{HAUTEUR}) est trop petite. Minimum requis : 400x400.")
         try:
-            self.g = ouvrirFenetre(LARGEUR, HAUTEUR)
             customOrVanilla = "custom" if self.custom else "vanilla"
             map_file = random.choice(config.map[customOrVanilla])
             gameMap, self.timer, self.timerfantome, self.SIZE, self.margin_x, self.margin_y = load_map("maps/"+ customOrVanilla + "/" + map_file)
             self.TIMERFANTOME = self.timerfantome
             create_background(self.g, self.SIZE)
-            
+
             # Récupération des objets, la position du joueur et des upgrades
             self.objects, player_pos, upgrades, self.pos_puddle, self.pos_portal  = initialize_objects(
                 gameMap, self.g, self.SIZE, 
@@ -201,11 +204,12 @@ class Game:
         Fonction permettant d'afficher du texte et de recommencer le jeu OU de l'arrêter.
         """
         player_choice = showGameResult(self.g, self.player.points)
+        self.g.supprimer("all")
 
         if player_choice == "play again": #Si le joueur veut rejouer, on relance
-            Game(self.custom)
+            self.__init__(self.custom)
         elif player_choice == "change mode":
-            Game(not self.custom)
+            self.__init__(not self.custom)
         else:                             #Sinon, on quitte
             exit()
 

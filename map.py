@@ -37,8 +37,7 @@ def load_map(file_path: str):
                 gameMap.append(list(line))
 
     if timerfantome == None or timer == None:
-        print("Erreur, les variables timer et/ou timerfantome ne sont pas présente dans le fichier de configuration")
-        exit()
+        raise ValueError("Erreur, les variables timer et/ou timerfantome ne sont pas présente dans le fichier de configuration")
 
     SIZE = min(LARGEUR // len(maxLength)-1, HAUTEUR // len(gameMap)) #Permet de définir la taille d'une cellule en fonction de la taille de l'écran et des la carte.
     if SIZE > 75: SIZE=75 # On évite que chaque cases soit énorme (ultra zommé)
@@ -115,7 +114,7 @@ def initialize_objects(gameMap, g: object, SIZE: int, margin_x: int, margin_y: i
                 objects[(SIZE * x+margin_x, SIZE * y+margin_y, obj.id)] = obj
         if y > 2:
             # Si les deux cases du HUD sont passées, créer pour chaque "ligne", un fond de la couleur de l'intérieur
-            # ((len(gameMap[y])+1)*SIZE)  permet de calculer la largeur
+            # ((len(gameMap[y])-1)*SIZE)  permet de calculer la largeur
             g.dessinerRectangle(margin_x+(emptyLine*SIZE), (y*SIZE)+margin_y, (len(gameMap[y])-1)*SIZE-(emptyLine*SIZE), SIZE, colors["inside"], "background")
 
     return objects, player, upgrades, pos_puddle, pos_portal

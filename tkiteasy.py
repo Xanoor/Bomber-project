@@ -411,8 +411,9 @@ class Canevas(tk.Canvas):
         Args:
             obj (ObjetGraphique): L'objet graphique à supprimer
         """
-        if obj == "all":
+        if obj == "all":    #Si on veut tout supprimer
             self.delete("all")
+            self.images.clear() #Permet de supprimer toutes les images afin que la taille ne soit pas conservée !
         else:
             self.delete(obj.id)
 
