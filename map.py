@@ -91,6 +91,8 @@ def initialize_objects(gameMap, g: object, SIZE: int, margin_x: int, margin_y: i
         objects (dict) : Dictionnaire des objets créés.
         player(tuple) : Tuple des coordonnées du bomber
         upgrades (list) : Liste contenant des tuples des coordonées des upgrades
+        pos_puddle (tuple) : position des flaques d'eau
+        pos_portal (tuple) : position des portails
     """
     objects = {}
     upgrades, pos_puddle, pos_portal = [], [], []

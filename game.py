@@ -10,7 +10,16 @@ LARGEUR = config.LARGEUR
 HAUTEUR = config.HAUTEUR
 
 class Game:
+    """
+    Class représentant l'exécution du jeu.
+    """
     def __init__(self, custom=config.customMode):
+        """
+        Initialise la class Game.
+
+        Args:
+            custom (bool) : Définit si le jeu est lancé en mode custom ou non.
+        """
         self.custom = custom
         self.gameover = False
         self.objects = {}
@@ -28,7 +37,10 @@ class Game:
         self.run()
 
     def initialize_game(self) -> None:
-        #Si la classe Game n'a pas l'attribut g, on fait rien.
+        """
+        Permet de créer le jeu de manière graphique.
+        """
+        #Si la classe Game n'a pas l'attribut g, on ne fait rien.
         if not hasattr(self, "g"):
             self.g = ouvrirFenetre(LARGEUR, HAUTEUR)
 
@@ -54,13 +66,13 @@ class Game:
                 print("Le joueur n'est pas présent sur carte lors de l'initialization !")
                 exit()
 
-            # Creation du joueur (player)
+            # Création du joueur (player)
             self.player = Player(player_pos[0], player_pos[1], self)
             
-            # Creation des upgrades
+            # Création des upgrades
             for upgrade in upgrades:
                 Upgrade(upgrade[0], upgrade[1], self)
-            # self.g.afficherTexte()
+            
             defaultUIIcons(self.g, self.SIZE)
             self.timer_obj, self.stats_obj = statistiques(
                 self.g, self.timer_obj, self.stats_obj, self.timer, 
@@ -115,7 +127,7 @@ class Game:
 
     def checkNeightbor(self, x: int, y: int) -> list:
         """
-        Fonction récursive qui vérifie et renvoie les voisons a une position.
+        Fonction récursive qui vérifie et renvoie les voisins à une position.
         Args:
             x (int) : position x de l'objet
             y (int) : position y de l'objet
@@ -136,15 +148,17 @@ class Game:
         return pos_list
 
     def update(self):
-        """Fonction appelée a chaque tours afin de mettre a jour les variables et appeler les autres classes"""
+        """
+        Fonction appelée à chaque tour afin de mettre à jour les variables et appeler les autres classes
+        """
         #On supprime chaque image d'explosion sur la carte.
         if len(self.explosions) > 0:
             for explosion in self.explosions:
                 self.g.supprimer(explosion)
 
         # Mise à jour des fantomes et des updates
-        self.callUpdate({"F", "U"}) # La consigne oblige de faire déja déplacer les fantomes, puis faire mettre a jour les bombes
-                                    # il y aura donc deux appels de cette fonction pour la fonction callUpdate, une pour fantomes et upgrades et une pour bombes
+        self.callUpdate({"F", "U"}) # La consigne oblige de faire d'abord déplacer les fantomes, puis mettre à jour les bombes
+                                    # il y aura donc deux appels de cette fonction pour la fonction callUpdate, une pour les fantomes et les upgrades et une pour les bombes
 
         # Faire apparaitre les nouveaux fantomes si le timerfantome == 0
         if self.timerfantome == 0:
@@ -153,20 +167,20 @@ class Game:
                 if v.type == "E":
                     Fantome(v.x-(v.x%self.SIZE), v.y-(v.y%self.SIZE), self)
 
-        self.callUpdate({"B"}) # La consigne oblige de faire déja déplacer les fantomes, puis faire mettre a jour les bombes
-                               # il y aura donc deux appels de cette fonction pour la fonction callUpdate, une pour fantomes et upgrades et une pour bombes
+        self.callUpdate({"B"}) # La consigne oblige de faire d'abord déplacer les fantomes, puis faire mettre à jour les bombes
+                               # il y aura donc deux appels de cette fonction pour la fonction callUpdate, une pour les fantomes et les upgrades et une pour les bombes
 
         if self.custom: # Si l'on joue à la version custom                     
             Nappe(self.pos_puddle, self)
             
-        # Mise a jour des timers
+        # Mise à jour des timers
         self.timer -= 1
         self.timerfantome -= 1
 
         if self.timer <= 0:
             self.gameover = True
             
-        # Mise a jour des statistique (UI)
+        # Mise à jour des statistique (UI)
         self.timer_obj, self.stats_obj = statistiques(
             self.g, self.timer_obj, self.stats_obj, self.timer, 
             self.player.pv, self.player.points, self.player.level, 
@@ -200,7 +214,7 @@ class Game:
 
         if player_choice == "play again": #Si le joueur veut rejouer, on relance
             self.__init__(self.custom)
-        elif player_choice == "change mode":
+        elif player_choice == "change mode": #Si le joueur veut rejouer dans l'autre mode, on le lance
             self.__init__(not self.custom)
         else:                             #Sinon, on quitte
             exit()

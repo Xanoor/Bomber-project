@@ -91,7 +91,7 @@ class Fantome:
         
     def createFantom(self, x: int, y: int) -> None:
         """
-        Fonction permettant de créer un fantome, le fantome apparait a coté d'une prise éthernet.
+        Fonction permettant de créer un fantome, le fantome apparait à coté d'une prise ethernet.
         Args:
             x (int) : position x du fantome
             y (int) : position y du fantome
@@ -114,7 +114,7 @@ class Fantome:
         Args:
             neightbor (list) : Liste des positions voisines au fantome
         Return
-            bolléen (bool) : Renvoie si le joueur est voisin ou non.
+            booléen (bool) : Renvoie si le joueur est voisin ou non.
         """
         for n in neightbor:
             if n[0] == self.game.player.object.x and n[1] == self.game.player.object.y:
@@ -174,7 +174,7 @@ class Bombe:
 
     def createBomb(self, x: int, y: int) -> None:
         """
-        Fonction permettant de créer une bombe. Elle créer l'objets graphique, les données et enregistre tout dans le dictionnaire objects.
+        Fonction permettant de créer une bombe. Elle crée l'objets graphique, les données et enregistre tout dans le dictionnaire objects.
         Params:
             x (int) : Position x de la bombe.
             y (int) : Position y de la bombe.
@@ -239,7 +239,7 @@ class Bombe:
     def hitByBomb(self) -> None:
         """
         Fonction qui se déclanche lorsque la bombe est touché par une autre bombe.
-        Le cooldown est mit à 0 et le fonction update est appelée (celle-ci fera exploser la bombe).
+        Le cooldown est mit à 0 et la fonction update est appelée (celle-ci fera exploser la bombe).
         """
         if self.cooldown is not None:
             self.cooldown = 0
@@ -247,7 +247,7 @@ class Bombe:
 
     def update(self) -> None:
         """
-        Fonction appellée à chaque étape du jeu (chaque déplacement du joueur).
+        Fonction appelée à chaque étape du jeu (chaque déplacement du joueur).
         """
         if self.cooldown is not None:
             self.cooldown -= 1

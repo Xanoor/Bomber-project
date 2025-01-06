@@ -1,36 +1,36 @@
 
-#Taille de la fenêtre
+# Taille de la fenêtre
 LARGEUR = 800
 HAUTEUR = 600
 
 # Nom du fichier de la carte.
 map = {"vanilla": [
-        "map0.txt", "map1.txt", "map2.txt"
+        "map0.txt", "map1.txt", "map2.txt", "map3.txt"
         ],
        
         "custom": [
-            "map0_custom.txt", "map1_custom.txt", "map2_custom.txt"
+            "map0_custom.txt", "map1_custom.txt", "map2_custom.txt", "map3_custom.txt"
         ]
 }
 
-#Attribution des touches
+# Attribution des touches
 keys = {
-    #Touches de déplacement
+    # Touches de déplacement
     "up": "z",
     "down": "s",
     "right": "d",
     "left": "q",
 
-    #Touche poser une bombe
+    # Touche poser une bombe
     "place_bomb": "e",
 
-    #Touches pour quitter ou rejouer
+    # Touches pour quitter ou rejouer
     "quit": "escape",
     "play again": "space",
     "change mode": "m"
 }
 
-#Textures utilisées
+# Textures utilisées
 Textures = {
             "C": "textures/colonne.png",
             "M": "textures/mur.png",
@@ -43,13 +43,13 @@ Textures = {
             "T": "textures/portal.png"
 }
 
-#Textures utilisées pour l'HUD
+# Textures utilisées pour l'HUD
 Textures_HUD = {
     "coeur" : "textures/coeur.png",
     "timer" : "textures/timer.png"
 }
 
-#Couleurs utilisées
+# Couleurs utilisées
 colors = {
     "inside" : "#707070",
     "outside": "#108f32",

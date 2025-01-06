@@ -56,7 +56,7 @@ def isPlayerNeighbor(neightbor: list, player_pos: tuple): # Ajout du paramètre 
         neightbor (list) : Liste des positions voisines au fantome
         player_pos (tuple) : position (x, y) du joueur
     Return
-        bolléen (bool) : Renvoie si le joueur est voisin ou non.
+        booléen (bool) : Renvoie si le joueur est voisin ou non.
     """
     for n in neightbor:
         # Modification des variables de la position du joueur pour adapter la fonction à un fonctionnement seul
