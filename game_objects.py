@@ -9,7 +9,7 @@ class NullObject:
         self.type = type
 
 # Classe du joueur
-class Player:
+class Bomber:
     def __init__(self, x: int, y: int, game: object):
         self.game = game
         self.pv = 3
@@ -21,7 +21,7 @@ class Player:
         self.points = 0
         self.object = self.createPlayer(x, y)
 
-    def createPlayer(self, x: int, y: int):
+    def createPlayer(self, x: int, y: int) -> object:
         """
         Permet de créer le joueur.
         Args:
@@ -36,7 +36,7 @@ class Player:
         self.id = player_obj.id
         return player_obj
          
-    def damage(self):
+    def damage(self) -> None:
         """
         Fonction appelée lorsque le joueur est touché par une bombe ou attaqué par un fantome.
         """
@@ -45,7 +45,7 @@ class Player:
         if self.pv <= 0:
             self.game.gameover = True
 
-    def move(self, x: int, y: int):
+    def move(self, x: int, y: int) -> None:
         """
         Fonction appelée afin de faire bouger le joueur.
         Args:
@@ -56,6 +56,28 @@ class Player:
         self.x = self.object.x
         self.y = self.object.y
 
+    def on_portal(self, pos: list) -> None:
+        """
+        Fonction vérifiant si le joueur se trouve sur un portail.
+        
+        Args:
+            pos (list) : Liste contenant les coordonnées (x, y) des portails de la carte
+        """
+        actual_pos = (self.game.player.x, self.game.player.y)
+        if (actual_pos in pos):
+            self.teleport(pos, actual_pos)
+
+    def teleport(self, portal: list, pos: tuple) -> None:
+        """
+        Fonction déplaçant le joueur sur le portail à l'opposé de la carte
+
+        Args:
+            portal (list) : Liste contenant les coordonnées (x, y) des portails de la carte.
+            pos (tuple): Position (x, y) du joueur.
+        """
+        for port in portal:
+            if port[0] != pos[0] and port[1] == pos[1]:
+                Bomber.move(self, port[0] - pos[0], 0)
 
 # Classe des fantomes
 class Fantome:
@@ -67,9 +89,9 @@ class Fantome:
         self.lastPos = None
         self.createFantom(x, y)
         
-    def createFantom(self, x: int, y: int):
+    def createFantom(self, x: int, y: int) -> None:
         """
-        Fonction permettant de créer un fantome, le fantome apparait a coté d'une prise éthernet.
+        Fonction permettant de créer un fantome, le fantome apparait à coté d'une prise ethernet.
         Args:
             x (int) : position x du fantome
             y (int) : position y du fantome
@@ -77,7 +99,7 @@ class Fantome:
             None
         """
         pos = self.game.checkNeightbor(x, y)
-        if len(pos) > 1: # Si la prise n'est pas bloquée:
+        if len(pos) > 0: # Si la prise n'est pas bloquée:
             pos = random.choice(pos)
             self.type = "F"
             self.x = pos[0]
@@ -86,20 +108,20 @@ class Fantome:
             self.id = self.obj.id
             self.game.objects[(self.x, self.y, self.id)] = self
 
-    def isPlayerNeighbor(self, neightbor: list):
+    def isPlayerNeighbor(self, neightbor: list) -> bool:
         """
         Fonction qui vérifie si le joueur est voisin ou non.
         Args:
             neightbor (list) : Liste des positions voisines au fantome
         Return
-            bolléen (bool) : Renvoie si le joueur est voisin ou non.
+            booléen (bool) : Renvoie si le joueur est voisin ou non.
         """
         for n in neightbor:
             if n[0] == self.game.player.object.x and n[1] == self.game.player.object.y:
                 return True
         return False
     
-    def hitByBomb(self):
+    def hitByBomb(self) -> None:
         """
         Fonction qui se déclanche lorsque le fantome est touché par une bombe.
         Le fantome est supprimé et laisse place a une upgrade.
@@ -108,7 +130,7 @@ class Fantome:
         self.game.g.supprimer(self.obj)
         Upgrade(self.x, self.y, self.game)
     
-    def update(self):
+    def update(self) -> None:
         """
         Fonction appelée a chaque étape de jeu, sert a bouger le fantome.
         """
@@ -150,9 +172,9 @@ class Bombe:
         self.cooldown: int = 6 # 5-1 car on met direct a jour le tour (ce qui retire un au cooldown)
         self.createBomb(x, y)
 
-    def createBomb(self, x: int, y: int):
+    def createBomb(self, x: int, y: int) -> None:
         """
-        Fonction permettant de créer une bombe. Elle créer l'objets graphique, les données et enregistre tout dans le dictionnaire objects.
+        Fonction permettant de créer une bombe. Elle crée l'objets graphique, les données et enregistre tout dans le dictionnaire objects.
         Params:
             x (int) : Position x de la bombe.
             y (int) : Position y de la bombe.
@@ -182,14 +204,14 @@ class Bombe:
         for i in range(1, dist+1):
             position = (x + (self.game.SIZE * dirx * i), y + (self.game.SIZE * diry * i))
             # La fonction any retourne True si la condition est vérifiée au moins une fois, sinon False
-            hasTypeC = any(element.type == "C" or element.type == "E" for element in self.game.getCase(position[0], position[1]))
+            hasTypeC = any(element.type in ["C", "E", "T", "N"] for element in self.game.getCase(position[0], position[1]))
             if hasTypeC: break #Si la position contient une colonne ou une prise ethernet, on s'arrete et n'ajoutons pas la position.
 
             pattern.append(position)
 
         return pattern + self.getExplosionPattern(x, y, -diry, dirx, dist, s+1)
 
-    def explosion(self):
+    def explosion(self) -> None:
         """
         Fonction appelée afin de faire exploser la bombe.
         """
@@ -214,18 +236,18 @@ class Bombe:
                                         (self.game.SIZE, self.game.SIZE), 
                                         "textures/explosion.png"))
 
-    def hitByBomb(self):
+    def hitByBomb(self) -> None:
         """
         Fonction qui se déclanche lorsque la bombe est touché par une autre bombe.
-        Le cooldown est mit à 0 et le fonction update est appelée (celle-ci fera exploser la bombe).
+        Le cooldown est mit à 0 et la fonction update est appelée (celle-ci fera exploser la bombe).
         """
         if self.cooldown is not None:
             self.cooldown = 0
             self.update()
 
-    def update(self):
+    def update(self) -> None:
         """
-        Fonction appellée à chaque étape du jeu (chaque déplacement du joueur).
+        Fonction appelée à chaque étape du jeu (chaque déplacement du joueur).
         """
         if self.cooldown is not None:
             self.cooldown -= 1
@@ -246,7 +268,7 @@ class Upgrade:
         self.type = "U"
         self.createUpgrade(x, y)
 
-    def createUpgrade(self, x: int, y: int):
+    def createUpgrade(self, x: int, y: int) -> None:
         """
         Fonction permettant de créer une upgrade. Elle créer l'objets graphique, les données et enregistre tout dans le dictionnaire objects.
         Params:
@@ -259,7 +281,7 @@ class Upgrade:
         self.id = self.obj.id
         self.game.objects[(self.x, self.y, self.id)] = self
 
-    def hitByBomb(self):
+    def hitByBomb(self) -> None:
         """
         Fonction qui se déclanche lorsque l'upgrade est touchée par une bombe.
         L'upgrade est supprimé.
@@ -267,7 +289,7 @@ class Upgrade:
         del self.game.objects[(self.x, self.y, self.id)]
         self.game.g.supprimer(self.obj)
 
-    def update(self):
+    def update(self) -> None:
         """
         Fonction appellée à chaque étape du jeu (chaque déplacement du joueur).
         """
@@ -281,3 +303,16 @@ class Upgrade:
 
             del self.game.objects[(self.x, self.y, self.id)]
             self.game.g.supprimer(self.obj)
+            
+# CUSTOM
+
+class Nappe:
+    def __init__(self, pos: list, game: object):
+        self.game = game
+        self.pos = pos
+        self.type = "N"
+        self.on_puddle()
+        
+    def on_puddle(self) -> None:
+        if ((self.game.player.x, self.game.player.y) in self.pos):
+            self.game.player.damage()

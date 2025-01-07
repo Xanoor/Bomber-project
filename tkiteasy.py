@@ -225,7 +225,8 @@ class Canevas(tk.Canvas):
         y: float,
         couleur: _Color = "white",
         taille: int = 18,
-        justify: str="left" #Permet de justifier le texte à gauche, au milieu ou à droite.
+        justifier: str="left", #Permet de justifier le texte à gauche, au milieu ou à droite.
+        ancre: Literal["n", "s", "w", "e", "nw", "sw", "ne", "se", "center"] = "center" #Permet de définir ou est ancré le texte.
     ) -> ObjetGraphique:
         """Affiche un texte sur le canevas
 
@@ -241,11 +242,17 @@ class Canevas(tk.Canvas):
         """
         font = Font(family="Helvetica", size=taille, weight="normal")
         return ObjetGraphique(
-            self.create_text(x, y, fill=couleur, text=texte, font=font, justify=justify), x, y, couleur
+            self.create_text(x, y, fill=couleur, text=texte, font=font, justify=justifier, anchor=ancre), x, y, couleur
         )
 
     def dessinerRectangle(
-        self, x: float, y: float, largeur: float, hauteur: float, couleur: _Color
+        self, 
+        x: float, 
+        y: float, 
+        largeur: float, 
+        hauteur: float, 
+        couleur: _Color, 
+        tag: int=None #Permet d'attribuer des tags, par exemple pour mettre le fond en arrière plan.
     ) -> ObjetGraphique:
         """Dessine un rectangle aux coordonnées souhaitées sur le canevas
 
@@ -259,14 +266,21 @@ class Canevas(tk.Canvas):
         Returns:
             ObjetGraphique: Retourne un objet graphique représentant ce rectangle sur le canevas
         """
-        return ObjetGraphique(
+        rectangle_id = ObjetGraphique(
             self.create_rectangle(
-                x, y, x + largeur, y + hauteur, fill=couleur, width=0
+                x, y, x + largeur, y + hauteur, fill=couleur, width=0, tags=tag
             ),
             x,
             y,
             couleur,
         )
+
+        #Si le tag est background, on met le tag en arrière plan.
+        if tag != None and tag == "background":
+            self.tag_lower(tag) 
+
+        return rectangle_id
+    
 
     def dessinerLigne(
         self, x: float, y: float, x2: float, y2: float, couleur: _Color
@@ -397,7 +411,12 @@ class Canevas(tk.Canvas):
         Args:
             obj (ObjetGraphique): L'objet graphique à supprimer
         """
-        self.delete(obj.id)
+        if obj == "all":    #Si on veut tout supprimer
+            self.delete("all")
+            self.images.clear() #Permet de supprimer toutes les images afin que la taille ne soit pas conservée !
+        else:
+            self.delete(obj.id)
+
 
     def changerCouleur(self, obj: ObjetGraphique, couleur: _Color) -> None:
         """Change la couleur d'un objet graphique.
